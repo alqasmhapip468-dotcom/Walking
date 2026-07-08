@@ -1,0 +1,944 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>صقل — تحسين جودة الصوت</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&family=IBM+Plex+Sans+Arabic:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #15120e;
+    --bg-panel: #1e1a15;
+    --brass: #c9a15a;
+    --brass-dim: #7a6537;
+    --teal: #5c8a82;
+    --cream: #ede6d9;
+    --cream-dim: #a89c88;
+    --red: #b5533f;
+    --line: #33291d;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{
+    background: radial-gradient(ellipse at top, #1c1712 0%, #100d0a 60%);
+    color: var(--cream);
+    font-family:'IBM Plex Sans Arabic', sans-serif;
+    min-height:100vh;
+    padding: 32px 18px 80px;
+  }
+  .wrap{ max-width: 760px; margin: 0 auto; }
+
+  header{ text-align:center; margin-bottom: 44px; }
+  .eyebrow{
+    font-size: 13px; letter-spacing: 2px; color: var(--brass);
+    font-weight:500; margin-bottom:10px; opacity:.85;
+  }
+  h1{
+    font-family:'Cairo', sans-serif; font-weight:900;
+    font-size: clamp(38px, 8vw, 58px);
+    color: var(--cream);
+    line-height:1.1;
+  }
+  h1 span{ color: var(--brass); }
+  .tagline{
+    color: var(--cream-dim); font-size:16px; margin-top:14px;
+    max-width: 480px; margin-inline:auto; line-height:1.7;
+  }
+
+  /* Signature gem/vinyl mark */
+  .mark{ display:flex; justify-content:center; margin: 26px 0 6px; }
+  .mark svg{ width:64px; height:64px; }
+
+  .panel{
+    background: var(--bg-panel);
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    padding: 28px;
+    margin-bottom: 22px;
+    box-shadow: 0 20px 50px -25px rgba(0,0,0,.6);
+  }
+
+  #dropzone{
+    border: 2px dashed var(--brass-dim);
+    border-radius: 14px;
+    padding: 46px 20px;
+    text-align:center;
+    cursor:pointer;
+    transition: border-color .2s, background .2s;
+  }
+  #dropzone:hover, #dropzone.drag{
+    border-color: var(--brass);
+    background: rgba(201,161,90,0.06);
+  }
+  #dropzone .icon{ font-size:34px; margin-bottom:14px; }
+  #dropzone .title{ font-family:'Cairo'; font-weight:700; font-size:18px; margin-bottom:6px;}
+  #dropzone .sub{ color:var(--cream-dim); font-size:14px;}
+  input[type=file]{ display:none; }
+
+  .filebar{
+    display:none; align-items:center; justify-content:space-between;
+    background:#26201a; border:1px solid var(--line); border-radius:12px;
+    padding: 14px 18px; margin-top:16px; font-size:14px;
+  }
+  .filebar .name{ color:var(--cream); font-weight:500; }
+  .filebar .size{ color:var(--cream-dim); font-size:12px; }
+  .filebar button{
+    background:none; border:1px solid var(--brass-dim); color:var(--brass);
+    padding:6px 14px; border-radius:8px; font-size:13px; cursor:pointer;
+    font-family:'IBM Plex Sans Arabic';
+  }
+
+  .stages{ margin-top: 22px; display:none; }
+  .stage{
+    display:flex; align-items:center; gap:12px; padding: 10px 4px;
+    color: var(--cream-dim); font-size: 14.5px;
+    border-bottom: 1px solid var(--line);
+  }
+  .stage:last-child{ border-bottom:none; }
+  .dot{
+    width:9px; height:9px; border-radius:50%;
+    background: var(--line); flex-shrink:0;
+    transition: background .25s;
+  }
+  .stage.active .dot{ background: var(--brass); box-shadow: 0 0 8px var(--brass);}
+  .stage.done .dot{ background: var(--teal); }
+  .stage.active{ color: var(--cream); }
+  .stage.done{ color: var(--teal); }
+
+  button.primary{
+    width:100%;
+    background: linear-gradient(180deg, var(--brass), #a4823f);
+    color:#1c1712; font-family:'Cairo'; font-weight:700; font-size:16px;
+    border:none; border-radius:12px; padding:15px; margin-top:20px;
+    cursor:pointer; transition: transform .1s, opacity .2s;
+  }
+  button.primary:hover{ transform: translateY(-1px); }
+  button.primary:disabled{ opacity:.4; cursor:not-allowed; transform:none; }
+
+  .result{ display:none; }
+  .waves{ display:grid; grid-template-columns: 1fr 1fr; gap:14px; margin-bottom:18px;}
+  @media (max-width:520px){ .waves{ grid-template-columns: 1fr; } }
+  .wave-card{ background:#0f0d0a; border:1px solid var(--line); border-radius:10px; padding:12px; }
+  .wave-card .lbl{ font-size:12px; color:var(--cream-dim); margin-bottom:8px; display:flex; justify-content:space-between;}
+  canvas{ width:100%; height:70px; display:block; }
+
+  audio{ width:100%; margin-top:6px; }
+  .dl{
+    display:flex; align-items:center; justify-content:center; gap:10px;
+    background: var(--teal); color:#0f1a18; font-family:'Cairo'; font-weight:700;
+    padding:15px; border-radius:12px; text-decoration:none; margin-top:18px;
+    font-size:16px;
+  }
+  .note{
+    font-size:13px; color:var(--cream-dim); text-align:center; margin-top:14px; line-height:1.8;
+  }
+  .footer{ text-align:center; color:var(--cream-dim); font-size:12.5px; margin-top:30px; line-height:2; }
+  .footer b{ color:var(--brass); }
+
+  .ab-toggle{ display:flex; gap:8px; margin-bottom:10px; }
+  .ab-btn{
+    flex:1; background:#0f0d0a; border:1px solid var(--line); color:var(--cream-dim);
+    font-family:'Cairo'; font-weight:700; font-size:14px; padding:10px; border-radius:9px; cursor:pointer;
+  }
+  .ab-btn.active{ background: var(--teal); color:#0f1a18; border-color:var(--teal); }
+  .dl-row{ display:flex; gap:10px; margin-top:18px; }
+  .dl-row .dl{ margin-top:0; flex:1; font-size:14.5px; padding:13px; }
+  .dl-mp3{ background: var(--brass); color:#1c1712; }
+
+  .tab{
+    flex:1; background: var(--bg-panel); border:1px solid var(--line);
+    color: var(--cream-dim); font-family:'Cairo'; font-weight:700; font-size:14.5px;
+    padding:13px; border-radius:12px; cursor:pointer; transition:.2s;
+  }
+  .tab.active{ background: var(--brass); color:#1c1712; border-color: var(--brass); }
+
+  .rec-visual{
+    display:flex; align-items:center; justify-content:center; gap:3px;
+    height:70px; margin-bottom:10px;
+  }
+  .rec-visual .bar{
+    width:5px; background: var(--brass-dim); border-radius:3px;
+    height:6px; transition: height .07s ease-out;
+  }
+  .rec-time{
+    text-align:center; font-family:'Cairo'; font-size:15px;
+    color: var(--cream-dim); margin-bottom:16px; letter-spacing:1px;
+  }
+  .rec-btn{
+    width:100%; background: var(--red); color:#f5e9e4; font-family:'Cairo';
+    font-weight:700; font-size:16px; border:none; border-radius:12px;
+    padding:16px; cursor:pointer; transition: transform .1s, background .2s;
+  }
+  .rec-btn:hover{ transform: translateY(-1px); }
+  .rec-btn.recording{ background:#7a2f22; }
+  .rec-btn.recording::before{ content:"⏹ "; }
+  .rec-btn:not(.recording)::before{ content:"🎙️ "; }
+  .rec-tip{
+    font-size:13.5px; color:var(--cream-dim); text-align:center;
+    margin-top:14px; line-height:1.9; background:#0f0d0a;
+    border:1px solid var(--line); border-radius:10px; padding:12px 14px;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="eyebrow">استوديو رقمي · بدون اشتراك · بدون رفع لأي سيرفر</div>
+    <h1>ص<span>قل</span></h1>
+    <p class="tagline">ارفع تسجيلك الخام، ويخرج بجودة أقرب لصوت الاستوديو: ضوضاء أقل، ترددات متزنة، وصوت أكثر ثباتاً ووضوحاً.</p>
+  </header>
+
+  <div class="mark">
+    <svg viewBox="0 0 64 64" fill="none">
+      <circle cx="32" cy="32" r="30" stroke="#7a6537" stroke-width="1.5"/>
+      <circle cx="32" cy="32" r="21" stroke="#c9a15a" stroke-width="1.5"/>
+      <circle cx="32" cy="32" r="3.5" fill="#c9a15a"/>
+      <path d="M32 11 L32 3" stroke="#c9a15a" stroke-width="2" stroke-linecap="round"/>
+    </svg>
+  </div>
+
+  <div class="tabs">
+    <button class="tab active" id="tabRecord">🎙️ سجّل بالمايك</button>
+    <button class="tab" id="tabUpload">⬆ ارفع ملف</button>
+  </div>
+
+  <div class="panel" id="recordPanel">
+    <div class="rec-visual" id="levelBars"></div>
+    <div class="rec-time" id="recTime">00:00</div>
+    <button class="rec-btn" id="recBtn">ابدأ التسجيل</button>
+    <div class="rec-tip">
+      نصائح لصوت أفضل حتى بهاتفك: سجّل في غرفة صغيرة فيها ملابس أو ستائر (تمتص الصدى)، أمسك الهاتف على بعد 15–20 سم من فمك وقليلاً من الجانب، أوقف المروحة/المكيف، وتجنّب لمس الهاتف أثناء الكلام.
+    </div>
+  </div>
+
+  <div class="panel" id="uploadPanel" style="display:none;">
+    <div id="dropzone">
+      <div class="icon">📁</div>
+      <div class="title">اسحب الملف هنا أو اضغط للاختيار</div>
+      <div class="sub">يدعم MP3 وملفات MP4 (سيُستخرج الصوت منها)</div>
+      <input type="file" id="fileInput" accept="audio/*,video/mp4,.mp3,.mp4,.m4a,.wav">
+    </div>
+    <div class="filebar" id="filebar">
+      <div>
+        <div class="name" id="fname"></div>
+        <div class="size" id="fsize"></div>
+      </div>
+      <button id="clearBtn">إزالة</button>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="stages" id="stages">
+      <div class="stage" data-s="1"><div class="dot"></div><div>فك التشفير وقصّ الصمت الزائد من البداية والنهاية</div></div>
+      <div class="stage" data-s="2"><div class="dot"></div><div>إزالة الضوضاء طيفياً وتخفيف صوت التنفس بين الجمل</div></div>
+      <div class="stage" data-s="3"><div class="dot"></div><div>تحليل نبرة صوتك وضبط الترددات تلقائياً (EQ تكيّفي)</div></div>
+      <div class="stage" data-s="4"><div class="dot"></div><div>ضغط الديناميكية لثبات المستوى (Compressor)</div></div>
+      <div class="stage" data-s="5"><div class="dot"></div><div>رفع مستوى الصوت وتثبيته (Loudness Normalize)</div></div>
+      <div class="stage" data-s="6"><div class="dot"></div><div>حد أقصى آمن ضد التشويه وتصدير WAV/MP3 (Limiter)</div></div>
+    </div>
+
+    <button class="primary" id="processBtn" disabled>ابدأ التحسين</button>
+  </div>
+
+  <div class="panel result" id="resultPanel">
+    <div class="waves">
+      <div class="wave-card">
+        <div class="lbl"><span>قبل</span><span>خام</span></div>
+        <canvas id="waveBefore"></canvas>
+      </div>
+      <div class="wave-card">
+        <div class="lbl"><span>بعد</span><span style="color:#5c8a82">محسّن</span></div>
+        <canvas id="waveAfter"></canvas>
+      </div>
+    </div>
+    <div class="ab-toggle" id="abToggle">
+      <button class="ab-btn" id="btnBefore">▶ قبل</button>
+      <button class="ab-btn active" id="btnAfter">▶ بعد</button>
+    </div>
+    <audio id="player" controls></audio>
+    <div class="dl-row">
+      <a class="dl" id="downloadLink" download="saql-enhanced.wav">⬇ WAV (جودة أعلى)</a>
+      <a class="dl dl-mp3" id="downloadMp3Link" download="saql-enhanced.mp3">⬇ MP3 (حجم أصغر)</a>
+    </div>
+    <div class="note">تم كل شيء داخل متصفحك — لم يُرسَل ملفك لأي خادم.</div>
+  </div>
+
+  <div class="footer">
+    صُنع بمعالجة صوت حقيقية عبر <b>Web Audio API</b> — بدون مفاتيح API وبدون تكلفة لكل استخدام.
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/lamejs/1.2.1/lame.min.js"></script>
+<script>
+const dropzone = document.getElementById('dropzone');
+const fileInput = document.getElementById('fileInput');
+const filebar = document.getElementById('filebar');
+const fname = document.getElementById('fname');
+const fsize = document.getElementById('fsize');
+const clearBtn = document.getElementById('clearBtn');
+const processBtn = document.getElementById('processBtn');
+const stagesEl = document.getElementById('stages');
+const resultPanel = document.getElementById('resultPanel');
+
+let currentFile = null;
+
+const tabRecord = document.getElementById('tabRecord');
+const tabUpload = document.getElementById('tabUpload');
+const recordPanel = document.getElementById('recordPanel');
+const uploadPanel = document.getElementById('uploadPanel');
+
+tabRecord.addEventListener('click', ()=>{
+  tabRecord.classList.add('active'); tabUpload.classList.remove('active');
+  recordPanel.style.display='block'; uploadPanel.style.display='none';
+});
+tabUpload.addEventListener('click', ()=>{
+  tabUpload.classList.add('active'); tabRecord.classList.remove('active');
+  uploadPanel.style.display='block'; recordPanel.style.display='none';
+});
+
+// build level meter bars
+const levelBars = document.getElementById('levelBars');
+const NUM_BARS = 28;
+for(let i=0;i<NUM_BARS;i++){
+  const b = document.createElement('div'); b.className='bar'; levelBars.appendChild(b);
+}
+const barEls = Array.from(levelBars.children);
+
+const recBtn = document.getElementById('recBtn');
+const recTime = document.getElementById('recTime');
+let mediaRecorder, recordedChunks = [], micStream, meterCtx, analyser, meterRAF;
+let recording = false, recSeconds = 0, recTimerInterval;
+
+recBtn.addEventListener('click', async ()=>{
+  if(!recording){
+    try{
+      micStream = await navigator.mediaDevices.getUserMedia({
+        audio: { echoCancellation:false, noiseSuppression:false, autoGainControl:false }
+      });
+    }catch(err){
+      alert('تعذّر الوصول للمايكروفون. تأكد من السماح للموقع باستخدامه من إعدادات المتصفح.');
+      return;
+    }
+    recordedChunks = [];
+    let mimeType = '';
+    for(const t of ['audio/webm;codecs=opus','audio/webm','audio/mp4']){
+      if(window.MediaRecorder && MediaRecorder.isTypeSupported(t)){ mimeType = t; break; }
+    }
+    mediaRecorder = mimeType ? new MediaRecorder(micStream, {mimeType}) : new MediaRecorder(micStream);
+    mediaRecorder.ondataavailable = e=>{ if(e.data.size>0) recordedChunks.push(e.data); };
+    mediaRecorder.onstop = ()=>{
+      const blob = new Blob(recordedChunks, {type: mediaRecorder.mimeType || 'audio/webm'});
+      const pseudoFile = new File([blob], 'تسجيل-مباشر.webm', {type: blob.type});
+      handleFile(pseudoFile);
+      micStream.getTracks().forEach(t=>t.stop());
+      tabUpload.click();
+    };
+    mediaRecorder.start();
+    recording = true;
+    recBtn.classList.add('recording');
+    recBtn.textContent = 'إيقاف التسجيل';
+    recBtn.style.setProperty('--before','⏹');
+    recSeconds = 0;
+    recTime.textContent = '00:00';
+    recTimerInterval = setInterval(()=>{
+      recSeconds++;
+      const m = String(Math.floor(recSeconds/60)).padStart(2,'0');
+      const s = String(recSeconds%60).padStart(2,'0');
+      recTime.textContent = `${m}:${s}`;
+    }, 1000);
+    startLevelMeter(micStream);
+  } else {
+    recording = false;
+    mediaRecorder.stop();
+    clearInterval(recTimerInterval);
+    stopLevelMeter();
+    recBtn.classList.remove('recording');
+    recBtn.textContent = 'ابدأ التسجيل';
+  }
+});
+
+function startLevelMeter(stream){
+  const AC = window.AudioContext || window.webkitAudioContext;
+  meterCtx = new AC();
+  const source = meterCtx.createMediaStreamSource(stream);
+  analyser = meterCtx.createAnalyser();
+  analyser.fftSize = 256;
+  source.connect(analyser);
+  const data = new Uint8Array(analyser.frequencyBinCount);
+  function draw(){
+    analyser.getByteFrequencyData(data);
+    const step = Math.floor(data.length / NUM_BARS);
+    for(let i=0;i<NUM_BARS;i++){
+      let sum=0;
+      for(let j=0;j<step;j++) sum += data[i*step+j] || 0;
+      const avg = sum/step;
+      const height = Math.max(6, Math.min(64, (avg/255)*64));
+      barEls[i].style.height = height+'px';
+      barEls[i].style.background = avg>200 ? '#b5533f' : '#c9a15a';
+    }
+    meterRAF = requestAnimationFrame(draw);
+  }
+  draw();
+}
+function stopLevelMeter(){
+  if(meterRAF) cancelAnimationFrame(meterRAF);
+  barEls.forEach(b=>{ b.style.height='6px'; });
+  if(meterCtx) meterCtx.close();
+}
+
+dropzone.addEventListener('click', ()=> fileInput.click());
+dropzone.addEventListener('dragover', e=>{ e.preventDefault(); dropzone.classList.add('drag'); });
+dropzone.addEventListener('dragleave', ()=> dropzone.classList.remove('drag'));
+dropzone.addEventListener('drop', e=>{
+  e.preventDefault(); dropzone.classList.remove('drag');
+  if(e.dataTransfer.files.length) handleFile(e.dataTransfer.files[0]);
+});
+fileInput.addEventListener('change', e=>{
+  if(e.target.files.length) handleFile(e.target.files[0]);
+});
+clearBtn.addEventListener('click', ()=>{
+  currentFile = null; filebar.style.display='none';
+  processBtn.disabled = true; fileInput.value='';
+  resultPanel.style.display='none'; stagesEl.style.display='none';
+});
+
+function handleFile(file){
+  currentFile = file;
+  fname.textContent = file.name;
+  fsize.textContent = (file.size/1024/1024).toFixed(2)+' MB';
+  filebar.style.display='flex';
+  processBtn.disabled = false;
+  resultPanel.style.display='none';
+}
+
+function setStage(n, state){
+  const el = stagesEl.querySelector(`.stage[data-s="${n}"]`);
+  el.classList.remove('active','done');
+  if(state) el.classList.add(state);
+}
+function wait(ms){ return new Promise(r=>setTimeout(r,ms)); }
+
+function drawWave(canvas, buffer){
+  const ctx = canvas.getContext('2d');
+  const dpr = window.devicePixelRatio || 1;
+  const w = canvas.clientWidth, h = canvas.clientHeight;
+  canvas.width = w*dpr; canvas.height = h*dpr;
+  ctx.scale(dpr,dpr);
+  const data = buffer.getChannelData(0);
+  const step = Math.ceil(data.length / w);
+  ctx.clearRect(0,0,w,h);
+  ctx.strokeStyle = '#c9a15a';
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  for(let i=0;i<w;i++){
+    let min=1, max=-1;
+    for(let j=0;j<step;j++){
+      const idx = i*step+j;
+      if(idx<data.length){
+        const v = data[idx];
+        if(v<min) min=v;
+        if(v>max) max=v;
+      }
+    }
+    const y1 = (1+min)*h/2, y2=(1+max)*h/2;
+    ctx.moveTo(i, y1); ctx.lineTo(i, y2);
+  }
+  ctx.stroke();
+}
+
+// --- Core DSP ---
+
+async function decodeFile(file){
+  const arrayBuf = await file.arrayBuffer();
+  const ctx = new (window.AudioContext || window.webkitAudioContext)();
+  const audioBuffer = await ctx.decodeAudioData(arrayBuf.slice(0));
+  return { audioBuffer, ctx };
+}
+
+// --- Real FFT (radix-2 Cooley-Tukey), in-place on Float32Arrays ---
+function fft(re, im){
+  const n = re.length;
+  for(let i=1, j=0; i<n; i++){
+    let bit = n>>1;
+    for(; j & bit; bit >>= 1) j ^= bit;
+    j ^= bit;
+    if(i<j){
+      let t=re[i]; re[i]=re[j]; re[j]=t;
+      t=im[i]; im[i]=im[j]; im[j]=t;
+    }
+  }
+  for(let len=2; len<=n; len<<=1){
+    const ang = -2*Math.PI/len;
+    const wr = Math.cos(ang), wi = Math.sin(ang);
+    for(let i=0; i<n; i+=len){
+      let curWr=1, curWi=0;
+      for(let j=0; j<len/2; j++){
+        const ur=re[i+j], ui=im[i+j];
+        const vr = re[i+j+len/2]*curWr - im[i+j+len/2]*curWi;
+        const vi = re[i+j+len/2]*curWi + im[i+j+len/2]*curWr;
+        re[i+j]=ur+vr; im[i+j]=ui+vi;
+        re[i+j+len/2]=ur-vr; im[i+j+len/2]=ui-vi;
+        const nwr = curWr*wr - curWi*wi;
+        const nwi = curWr*wi + curWi*wr;
+        curWr=nwr; curWi=nwi;
+      }
+    }
+  }
+}
+function ifft(re, im){
+  const n = re.length;
+  for(let i=0;i<n;i++) im[i] = -im[i];
+  fft(re, im);
+  for(let i=0;i<n;i++){ re[i] = re[i]/n; im[i] = -im[i]/n; }
+}
+
+// Real spectral-subtraction denoiser: learns the noise "fingerprint" from the
+// quietest parts of the recording, then subtracts it frequency-by-frequency
+// across the whole track. Also softens breath bursts (low-centroid, mid-energy
+// frames between words) without hard-muting anything, so nothing gets chopped.
+function spectralDenoise(buffer){
+  const frameSize = 2048;
+  const hop = 512;
+  const window = new Float32Array(frameSize);
+  for(let i=0;i<frameSize;i++) window[i] = 0.5 - 0.5*Math.cos(2*Math.PI*i/(frameSize-1));
+
+  for(let ch=0; ch<buffer.numberOfChannels; ch++){
+    const input = buffer.getChannelData(ch);
+    const numFrames = Math.max(1, Math.floor((input.length - frameSize)/hop) + 1);
+    const sampleRate = buffer.sampleRate;
+    const halfBins = Math.floor(frameSize/2);
+    const hzPerBin = sampleRate/frameSize;
+
+    // Pass A: cheap per-frame RMS energy to find quiet (noise-only) frames
+    const energies = new Float32Array(numFrames);
+    for(let f=0; f<numFrames; f++){
+      const start = f*hop;
+      let sum=0;
+      for(let i=0;i<frameSize;i++){
+        const s = input[start+i] || 0;
+        sum += s*s;
+      }
+      energies[f] = Math.sqrt(sum/frameSize);
+    }
+    const sortedE = Array.from(energies).sort((a,b)=>a-b);
+    const noiseThreshold = sortedE[Math.floor(sortedE.length*0.15)] || 0;
+
+    // Pass B: build average noise magnitude spectrum from quiet frames
+    const noiseMag = new Float32Array(frameSize);
+    let noiseFrameCount = 0;
+    const re = new Float32Array(frameSize), im = new Float32Array(frameSize);
+    for(let f=0; f<numFrames; f++){
+      if(energies[f] > noiseThreshold) continue;
+      const start = f*hop;
+      for(let i=0;i<frameSize;i++){ re[i] = (input[start+i]||0)*window[i]; im[i]=0; }
+      fft(re, im);
+      for(let i=0;i<frameSize;i++) noiseMag[i] += Math.sqrt(re[i]*re[i]+im[i]*im[i]);
+      noiseFrameCount++;
+    }
+    if(noiseFrameCount === 0) noiseFrameCount = 1;
+    for(let i=0;i<frameSize;i++) noiseMag[i] /= noiseFrameCount;
+
+    // Pass C: spectral subtraction + breath softening + overlap-add reconstruction
+    const output = new Float32Array(input.length);
+    const winSumSq = new Float32Array(input.length);
+    const overSub = 1.8;     // how aggressively to subtract the noise print
+    const floorRatio = 0.06; // spectral floor to avoid musical/robotic artifacts
+    const magArr = new Float32Array(frameSize), phaseArr = new Float32Array(frameSize);
+
+    for(let f=0; f<numFrames; f++){
+      const start = f*hop;
+      for(let i=0;i<frameSize;i++){ re[i] = (input[start+i]||0)*window[i]; im[i]=0; }
+      fft(re, im);
+
+      let centroidNum = 0, centroidDen = 0;
+      for(let i=0;i<frameSize;i++){
+        const mag = Math.sqrt(re[i]*re[i]+im[i]*im[i]);
+        magArr[i] = mag;
+        phaseArr[i] = Math.atan2(im[i], re[i]);
+        if(i < halfBins){ centroidNum += mag*(i*hzPerBin); centroidDen += mag; }
+      }
+      const centroidHz = centroidDen > 1e-9 ? centroidNum/centroidDen : 0;
+      // Breaths: louder than noise floor but quieter than speech, and energy
+      // concentrated in low frequencies (no crisp consonant content).
+      const isBreath = energies[f] > noiseThreshold*1.3 && energies[f] < noiseThreshold*4.5 && centroidHz < 1300;
+      const breathAtten = isBreath ? 0.3 : 1;
+
+      for(let i=0;i<frameSize;i++){
+        let newMag = magArr[i] - overSub*noiseMag[i];
+        const floor = floorRatio*magArr[i];
+        if(newMag < floor) newMag = floor;
+        newMag *= breathAtten;
+        re[i] = newMag*Math.cos(phaseArr[i]);
+        im[i] = newMag*Math.sin(phaseArr[i]);
+      }
+      ifft(re, im);
+      for(let i=0;i<frameSize;i++){
+        const idx = start+i;
+        if(idx < output.length){
+          output[idx] += re[i]*window[i];
+          winSumSq[idx] += window[i]*window[i];
+        }
+      }
+    }
+    for(let i=0;i<output.length;i++){
+      output[i] = output[i] / (winSumSq[i] > 1e-6 ? winSumSq[i] : 1);
+    }
+    input.set(output);
+  }
+}
+
+// Measures how bass-heavy vs. how bright the recording is, so the EQ stage
+// below can adapt its settings to this specific voice/mic instead of using
+// one fixed preset for everyone.
+function analyzeTonalBalance(buffer){
+  const data = buffer.getChannelData(0);
+  const sr = buffer.sampleRate;
+  function lowpass(cutoff){
+    const rc = 1/(2*Math.PI*cutoff);
+    const dt = 1/sr;
+    const alpha = dt/(rc+dt);
+    const out = new Float32Array(data.length);
+    let prev = 0;
+    for(let i=0;i<data.length;i++){ prev = prev + alpha*(data[i]-prev); out[i]=prev; }
+    return out;
+  }
+  const low300 = lowpass(300);
+  const low4000 = lowpass(4000);
+  let sumTotal=0, sumLow=0, sumHigh=0;
+  for(let i=0;i<data.length;i++){
+    sumTotal += data[i]*data[i];
+    sumLow += low300[i]*low300[i];
+    const highRes = data[i]-low4000[i];
+    sumHigh += highRes*highRes;
+  }
+  const totalRms = Math.sqrt(sumTotal/data.length) || 1e-9;
+  const lowRatio = Math.sqrt(sumLow/data.length)/totalRms;
+  const highRatio = Math.sqrt(sumHigh/data.length)/totalRms;
+  return { lowRatio, highRatio };
+}
+
+// Trims long silence at the very start/end (common with phone recordings),
+// leaving a small natural pad, using the same buffer/context for the result.
+function trimSilence(buffer, ctx, thresholdDb = -50){
+  const threshold = Math.pow(10, thresholdDb/20);
+  const data = buffer.getChannelData(0);
+  const windowSize = Math.floor(buffer.sampleRate*0.05); // 50ms
+  const padSamples = Math.floor(buffer.sampleRate*0.15); // 150ms pad
+  let startIdx = 0, endIdx = data.length;
+
+  for(let i=0; i<data.length; i+=windowSize){
+    const end = Math.min(i+windowSize, data.length);
+    let sum=0;
+    for(let j=i;j<end;j++) sum += data[j]*data[j];
+    if(Math.sqrt(sum/(end-i)) > threshold){ startIdx = Math.max(0, i-padSamples); break; }
+  }
+  for(let i=data.length-windowSize; i>=0; i-=windowSize){
+    const end = Math.min(i+windowSize, data.length);
+    let sum=0;
+    for(let j=i;j<end;j++) sum += data[j]*data[j];
+    if(Math.sqrt(sum/(end-i)) > threshold){ endIdx = Math.min(data.length, end+padSamples); break; }
+  }
+  if(endIdx <= startIdx) return buffer;
+
+  const trimmed = ctx.createBuffer(buffer.numberOfChannels, endIdx-startIdx, buffer.sampleRate);
+  for(let ch=0; ch<buffer.numberOfChannels; ch++){
+    trimmed.getChannelData(ch).set(buffer.getChannelData(ch).subarray(startIdx, endIdx));
+  }
+  return trimmed;
+}
+
+function cloneAudioBuffer(buffer, ctx){
+  const clone = ctx.createBuffer(buffer.numberOfChannels, buffer.length, buffer.sampleRate);
+  for(let ch=0; ch<buffer.numberOfChannels; ch++){
+    clone.getChannelData(ch).set(buffer.getChannelData(ch));
+  }
+  return clone;
+}
+
+async function runEQAndCompression(buffer, tonal){
+  const offlineCtx = new OfflineAudioContext(
+    buffer.numberOfChannels, buffer.length, buffer.sampleRate
+  );
+  const source = offlineCtx.createBufferSource();
+  source.buffer = buffer;
+
+  // Adapt EQ amounts to this specific recording instead of one fixed preset
+  const lowRatio = tonal ? tonal.lowRatio : 0.25;
+  const highRatio = tonal ? tonal.highRatio : 0.2;
+  const mudCutDb = lowRatio > 0.35 ? -5 : (lowRatio < 0.15 ? -1.5 : -3);
+  const presenceDb = highRatio < 0.12 ? 6 : (highRatio > 0.3 ? 2 : 4);
+  const deEssDb = highRatio > 0.3 ? -5 : -3;
+
+  const highpass = offlineCtx.createBiquadFilter();
+  highpass.type = 'highpass';
+  highpass.frequency.value = 85; // remove rumble/handling noise
+
+  const mudCut = offlineCtx.createBiquadFilter();
+  mudCut.type = 'peaking';
+  mudCut.frequency.value = 300;
+  mudCut.Q.value = 1.0;
+  mudCut.gain.value = mudCutDb; // reduce boxy/muddy tone
+
+  const presence = offlineCtx.createBiquadFilter();
+  presence.type = 'peaking';
+  presence.frequency.value = 3200;
+  presence.Q.value = 1.0;
+  presence.gain.value = presenceDb; // vocal clarity/presence boost
+
+  const deEss = offlineCtx.createBiquadFilter();
+  deEss.type = 'peaking';
+  deEss.frequency.value = 7000;
+  deEss.Q.value = 2.0;
+  deEss.gain.value = deEssDb; // tame harshness/sibilance
+
+  const compressor = offlineCtx.createDynamicsCompressor();
+  compressor.threshold.value = -30;
+  compressor.knee.value = 16;
+  compressor.ratio.value = 4.5;
+  compressor.attack.value = 0.003;
+  compressor.release.value = 0.25;
+
+  const makeup = offlineCtx.createGain();
+  makeup.gain.value = 2.0;
+
+  source.connect(highpass);
+  highpass.connect(mudCut);
+  mudCut.connect(presence);
+  presence.connect(deEss);
+  deEss.connect(compressor);
+  compressor.connect(makeup);
+  makeup.connect(offlineCtx.destination);
+
+  source.start(0);
+  const rendered = await offlineCtx.startRendering();
+  return rendered;
+}
+
+// Loudness-based normalize: raises the overall perceived volume to a target
+// RMS level (not just the peak). Clipping safety is handled afterwards by
+// the real limiter below, not by hard-clamping samples here.
+function normalizeBuffer(buffer, targetRmsDb = -16){
+  let sumSq = 0, sampleCount = 0;
+  for(let ch=0; ch<buffer.numberOfChannels; ch++){
+    const data = buffer.getChannelData(ch);
+    for(let i=0;i<data.length;i++){ sumSq += data[i]*data[i]; sampleCount++; }
+  }
+  if(sampleCount === 0) return buffer;
+  const currentRms = Math.sqrt(sumSq/sampleCount) || 1e-9;
+  const targetRms = Math.pow(10, targetRmsDb/20);
+  const gain = targetRms/currentRms;
+  for(let ch=0; ch<buffer.numberOfChannels; ch++){
+    const data = buffer.getChannelData(ch);
+    for(let i=0;i<data.length;i++) data[i] *= gain;
+  }
+  return buffer;
+}
+
+// Sliding-window maximum (monotonic deque), O(n) — max(|data[i-window+1..i]|)
+function slidingWindowMaxPast(data, window){
+  const n = data.length;
+  const result = new Float32Array(n);
+  const deque = [];
+  for(let i=0;i<n;i++){
+    while(deque.length && data[deque[deque.length-1]] <= data[i]) deque.pop();
+    deque.push(i);
+    if(deque[0] <= i-window) deque.shift();
+    result[i] = data[deque[0]];
+  }
+  return result;
+}
+
+// Real lookahead limiter, stereo-linked: looks a few ms ahead so it can start
+// reducing gain smoothly *before* a peak hits, instead of hard-clipping it.
+function limiterBuffer(buffer, ceilingDb = -0.8, lookaheadMs = 6, releaseMs = 60){
+  const n = buffer.length;
+  const numCh = buffer.numberOfChannels;
+  const channels = [];
+  for(let c=0;c<numCh;c++) channels.push(buffer.getChannelData(c));
+
+  const linked = new Float32Array(n);
+  for(let i=0;i<n;i++){
+    let m=0;
+    for(let c=0;c<numCh;c++){ const a=Math.abs(channels[c][i]); if(a>m) m=a; }
+    linked[i]=m;
+  }
+  const lookahead = Math.max(1, Math.floor(buffer.sampleRate*lookaheadMs/1000));
+  const release = Math.max(1, Math.floor(buffer.sampleRate*releaseMs/1000));
+
+  const rev = new Float32Array(n);
+  for(let i=0;i<n;i++) rev[i] = linked[n-1-i];
+  const pastMaxRev = slidingWindowMaxPast(rev, lookahead);
+  const futureMax = new Float32Array(n);
+  for(let i=0;i<n;i++) futureMax[i] = pastMaxRev[n-1-i];
+
+  const ceiling = Math.pow(10, ceilingDb/20);
+  let currentGain = 1;
+  const gainArr = new Float32Array(n);
+  for(let i=0;i<n;i++){
+    const needed = futureMax[i] > ceiling ? ceiling/futureMax[i] : 1;
+    currentGain = needed < currentGain ? needed : currentGain + (1-currentGain)/release;
+    gainArr[i] = currentGain;
+  }
+  for(let c=0;c<numCh;c++){
+    const data = channels[c];
+    for(let i=0;i<n;i++) data[i] *= gainArr[i];
+  }
+  return buffer;
+}
+
+// Encodes an AudioBuffer to a real MP3 file entirely client-side via lamejs.
+function encodeMp3(buffer, kbps = 128){
+  const numChannels = Math.min(2, buffer.numberOfChannels);
+  const encoder = new lamejs.Mp3Encoder(numChannels, buffer.sampleRate, kbps);
+  const blockSize = 1152;
+  const mp3Data = [];
+  const int16Channels = [];
+  for(let c=0;c<numChannels;c++){
+    const floatData = buffer.getChannelData(c);
+    const int16 = new Int16Array(floatData.length);
+    for(let i=0;i<floatData.length;i++){
+      const s = Math.max(-1, Math.min(1, floatData[i]));
+      int16[i] = s<0 ? s*0x8000 : s*0x7FFF;
+    }
+    int16Channels.push(int16);
+  }
+  const length = int16Channels[0].length;
+  for(let i=0; i<length; i+=blockSize){
+    let mp3buf;
+    if(numChannels === 2){
+      mp3buf = encoder.encodeBuffer(
+        int16Channels[0].subarray(i, i+blockSize),
+        int16Channels[1].subarray(i, i+blockSize)
+      );
+    } else {
+      mp3buf = encoder.encodeBuffer(int16Channels[0].subarray(i, i+blockSize));
+    }
+    if(mp3buf.length>0) mp3Data.push(mp3buf);
+  }
+  const last = encoder.flush();
+  if(last.length>0) mp3Data.push(last);
+  return new Blob(mp3Data, {type:'audio/mpeg'});
+}
+
+function bufferToWav(buffer){
+  const numChannels = buffer.numberOfChannels;
+  const sampleRate = buffer.sampleRate;
+  const format = 1; // PCM
+  const bitDepth = 16;
+  const bytesPerSample = bitDepth/8;
+  const blockAlign = numChannels * bytesPerSample;
+  const numFrames = buffer.length;
+  const dataSize = numFrames * blockAlign;
+  const bufferArr = new ArrayBuffer(44 + dataSize);
+  const view = new DataView(bufferArr);
+
+  function writeString(offset, str){
+    for(let i=0;i<str.length;i++) view.setUint8(offset+i, str.charCodeAt(i));
+  }
+
+  writeString(0,'RIFF');
+  view.setUint32(4, 36+dataSize, true);
+  writeString(8,'WAVE');
+  writeString(12,'fmt ');
+  view.setUint32(16,16,true);
+  view.setUint16(20, format, true);
+  view.setUint16(22, numChannels, true);
+  view.setUint32(24, sampleRate, true);
+  view.setUint32(28, sampleRate*blockAlign, true);
+  view.setUint16(32, blockAlign, true);
+  view.setUint16(34, bitDepth, true);
+  writeString(36,'data');
+  view.setUint32(40, dataSize, true);
+
+  const channels = [];
+  for(let ch=0; ch<numChannels; ch++) channels.push(buffer.getChannelData(ch));
+
+  let offset = 44;
+  for(let i=0; i<numFrames; i++){
+    for(let ch=0; ch<numChannels; ch++){
+      let sample = Math.max(-1, Math.min(1, channels[ch][i]));
+      sample = sample < 0 ? sample*0x8000 : sample*0x7FFF;
+      view.setInt16(offset, sample, true);
+      offset += 2;
+    }
+  }
+  return new Blob([bufferArr], {type:'audio/wav'});
+}
+
+let beforeUrl = null, afterUrl = null;
+const playerEl = document.getElementById('player');
+const btnBefore = document.getElementById('btnBefore');
+const btnAfter = document.getElementById('btnAfter');
+
+btnBefore.addEventListener('click', ()=>{
+  btnBefore.classList.add('active'); btnAfter.classList.remove('active');
+  if(beforeUrl){ playerEl.src = beforeUrl; playerEl.play(); }
+});
+btnAfter.addEventListener('click', ()=>{
+  btnAfter.classList.add('active'); btnBefore.classList.remove('active');
+  if(afterUrl){ playerEl.src = afterUrl; playerEl.play(); }
+});
+
+processBtn.addEventListener('click', async ()=>{
+  if(!currentFile) return;
+  processBtn.disabled = true;
+  processBtn.textContent = 'جارٍ المعالجة...';
+  stagesEl.style.display = 'block';
+  resultPanel.style.display = 'none';
+  [1,2,3,4,5,6].forEach(n=>setStage(n,null));
+
+  try{
+    setStage(1,'active');
+    const { audioBuffer, ctx } = await decodeFile(currentFile);
+    const trimmed = trimSilence(audioBuffer, ctx);
+    const original = cloneAudioBuffer(trimmed, ctx); // untouched copy for "before"
+    await wait(200);
+    setStage(1,'done'); setStage(2,'active');
+
+    spectralDenoise(trimmed);
+    await wait(150);
+    setStage(2,'done'); setStage(3,'active');
+
+    const tonal = analyzeTonalBalance(trimmed);
+    let processed = await runEQAndCompression(trimmed, tonal);
+    setStage(3,'done'); setStage(4,'active');
+    await wait(150);
+    setStage(4,'done'); setStage(5,'active');
+
+    processed = normalizeBuffer(processed, -16);
+    setStage(5,'done'); setStage(6,'active');
+    await wait(150);
+
+    processed = limiterBuffer(processed, -0.8);
+    setStage(6,'done');
+
+    const wavBlob = bufferToWav(processed);
+    afterUrl = URL.createObjectURL(wavBlob);
+    beforeUrl = URL.createObjectURL(bufferToWav(original));
+
+    const mp3Blob = encodeMp3(processed, 160);
+    const mp3Url = URL.createObjectURL(mp3Blob);
+
+    btnAfter.classList.add('active'); btnBefore.classList.remove('active');
+    playerEl.src = afterUrl;
+    document.getElementById('downloadLink').href = afterUrl;
+    document.getElementById('downloadMp3Link').href = mp3Url;
+
+    drawWave(document.getElementById('waveBefore'), original);
+    drawWave(document.getElementById('waveAfter'), processed);
+
+    resultPanel.style.display = 'block';
+    resultPanel.scrollIntoView({behavior:'smooth', block:'start'});
+
+  }catch(err){
+    console.error(err);
+    alert('تعذّر معالجة هذا الملف. جرّب ملف mp3 مباشرة، أو تأكد أن ملف mp4 يحتوي مساراً صوتياً مدعوماً من المتصفح.\n\nتفاصيل: '+err.message);
+  }finally{
+    processBtn.disabled = false;
+    processBtn.textContent = 'ابدأ التحسين';
+  }
+});
+</script>
+</body>
+</html>
