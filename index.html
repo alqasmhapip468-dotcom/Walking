@@ -135,7 +135,39 @@
   .footer{ text-align:center; color:var(--cream-dim); font-size:12.5px; margin-top:30px; line-height:2; }
   .footer b{ color:var(--brass); }
 
-  .ab-toggle{ display:flex; gap:8px; margin-bottom:10px; }
+  .mode-toggle{ display:flex; gap:8px; margin-bottom:12px; }
+  .mode-btn{
+    flex:1; background:#0f0d0a; border:1px solid var(--line); color:var(--cream-dim);
+    font-family:'Cairo'; font-weight:700; font-size:14px; padding:12px 6px; border-radius:10px; cursor:pointer;
+  }
+  .mode-btn.active{ background: var(--brass); color:#1c1712; border-color: var(--brass); }
+
+    display:flex; justify-content:space-between; align-items:center;
+    font-family:'Cairo'; font-weight:700; font-size:15px; margin-bottom:12px;
+  }
+  #durationLabel{ color: var(--brass); font-family:'IBM Plex Sans Arabic'; font-weight:500; font-size:14px; }
+  .edit-canvas{
+    width:100%; height:100px; display:block; background:#0f0d0a;
+    border:1px solid var(--line); border-radius:10px; touch-action:none; cursor:crosshair;
+  }
+  .time-row{ display:flex; gap:12px; margin-top:14px; }
+  .time-field{ flex:1; }
+  .time-field label{ display:block; font-size:12.5px; color:var(--cream-dim); margin-bottom:5px; }
+  .time-field input{
+    width:100%; background:#0f0d0a; border:1px solid var(--line); color:var(--cream);
+    font-family:'IBM Plex Sans Arabic'; font-size:15px; padding:9px 10px; border-radius:8px;
+    text-align:center; letter-spacing:1px;
+  }
+  .edit-actions{
+    display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:14px;
+  }
+  .edit-btn{
+    background:#26201a; border:1px solid var(--line); color:var(--cream);
+    font-family:'Cairo'; font-weight:600; font-size:13.5px; padding:11px 8px;
+    border-radius:9px; cursor:pointer;
+  }
+  .edit-btn.danger{ background:rgba(181,83,63,0.18); border-color:var(--red); color:#e7a596; }
+
   .ab-btn{
     flex:1; background:#0f0d0a; border:1px solid var(--line); color:var(--cream-dim);
     font-family:'Cairo'; font-weight:700; font-size:14px; padding:10px; border-radius:9px; cursor:pointer;
@@ -237,7 +269,38 @@
     </div>
   </div>
 
+  <div class="panel" id="editPanel" style="display:none;">
+    <div class="edit-head">
+      <span>✂️ قص المقاطع غير المرغوبة</span>
+      <span id="durationLabel">00:00</span>
+    </div>
+    <canvas id="editCanvas" class="edit-canvas"></canvas>
+    <div class="time-row">
+      <div class="time-field">
+        <label>من</label>
+        <input type="text" id="startTimeInput" value="00:00" inputmode="numeric">
+      </div>
+      <div class="time-field">
+        <label>إلى</label>
+        <input type="text" id="endTimeInput" value="00:00" inputmode="numeric">
+      </div>
+    </div>
+    <div class="edit-actions">
+      <button class="edit-btn" id="playSelBtn">▶ تشغيل التحديد</button>
+      <button class="edit-btn danger" id="deleteSelBtn">🗑 احذف المحدد</button>
+      <button class="edit-btn" id="undoBtn">↩ تراجع</button>
+      <button class="edit-btn" id="resetEditBtn">🔄 استعادة الأصل</button>
+    </div>
+    <div class="rec-tip">اسحب على الموجة لتحديد المقطع (أو اكتب الوقت يدوياً)، اضغط "تشغيل التحديد" للتأكد، ثم "احذف المحدد". يمكنك تكرار ذلك لعدة مقاطع قبل الضغط على "ابدأ التحسين".</div>
+  </div>
+
   <div class="panel">
+    <div class="mode-toggle">
+      <button class="mode-btn active" id="modeNatural">🎙️ صوت طبيعي محسّن</button>
+      <button class="mode-btn" id="modeDoc">🎬 وضع وثائقي</button>
+    </div>
+    <div class="rec-tip" id="modeDesc">صوت واضح ومتوازن، أقرب لصوتك الطبيعي لكن أنظف وأثبت.</div>
+
     <div class="stages" id="stages">
       <div class="stage" data-s="1"><div class="dot"></div><div>فك التشفير وقصّ الصمت الزائد من البداية والنهاية</div></div>
       <div class="stage" data-s="2"><div class="dot"></div><div>إزالة الضوضاء طيفياً وتخفيف صوت التنفس بين الجمل</div></div>
@@ -412,13 +475,149 @@ clearBtn.addEventListener('click', ()=>{
   resultPanel.style.display='none'; stagesEl.style.display='none';
 });
 
-function handleFile(file){
+const editPanel = document.getElementById('editPanel');
+const editCanvas = document.getElementById('editCanvas');
+const durationLabel = document.getElementById('durationLabel');
+const startTimeInput = document.getElementById('startTimeInput');
+const endTimeInput = document.getElementById('endTimeInput');
+
+let originalDecodedBuffer = null; // never mutated — used by "استعادة الأصل"
+let editBuffer = null;            // working buffer, shrinks as user deletes clips
+let editHistory = [];             // stack of previous editBuffer states, for undo
+let selStartSec = 0, selEndSec = 0;
+let isDragging = false;
+
+function fmtTime(sec){
+  sec = Math.max(0, sec||0);
+  const m = Math.floor(sec/60), s = Math.floor(sec%60);
+  return String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
+}
+function parseTime(str){
+  if(!str) return 0;
+  const parts = str.split(':').map(p=>parseFloat(p)||0);
+  if(parts.length===2) return parts[0]*60+parts[1];
+  return parseFloat(str)||0;
+}
+function updateInputsFromSel(){
+  startTimeInput.value = fmtTime(selStartSec);
+  endTimeInput.value = fmtTime(selEndSec);
+}
+function redrawEdit(){
+  if(!editBuffer) return;
+  durationLabel.textContent = fmtTime(editBuffer.duration);
+  const ctx = editCanvas.getContext('2d');
+  const dpr = window.devicePixelRatio || 1;
+  const w = editCanvas.clientWidth, h = editCanvas.clientHeight;
+  editCanvas.width = w*dpr; editCanvas.height = h*dpr;
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+  ctx.clearRect(0,0,w,h);
+
+  // selection highlight (drawn first, waveform on top)
+  if(selEndSec > selStartSec){
+    const x1 = (selStartSec/editBuffer.duration)*w;
+    const x2 = (selEndSec/editBuffer.duration)*w;
+    ctx.fillStyle = 'rgba(181,83,63,0.35)';
+    ctx.fillRect(x1, 0, x2-x1, h);
+  }
+
+  const data = editBuffer.getChannelData(0);
+  const step = Math.ceil(data.length/w);
+  ctx.strokeStyle = '#c9a15a';
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  for(let i=0;i<w;i++){
+    let min=1, max=-1;
+    for(let j=0;j<step;j++){
+      const idx = i*step+j;
+      if(idx<data.length){ const v=data[idx]; if(v<min)min=v; if(v>max)max=v; }
+    }
+    const y1=(1+min)*h/2, y2=(1+max)*h/2;
+    ctx.moveTo(i,y1); ctx.lineTo(i,y2);
+  }
+  ctx.stroke();
+}
+function xToSec(clientX){
+  const rect = editCanvas.getBoundingClientRect();
+  const x = Math.min(Math.max(clientX-rect.left, 0), rect.width);
+  return (x/rect.width) * (editBuffer ? editBuffer.duration : 0);
+}
+function pointerX(e){ return e.touches ? e.touches[0].clientX : e.clientX; }
+
+editCanvas.addEventListener('mousedown', e=>{ isDragging=true; selStartSec=xToSec(pointerX(e)); selEndSec=selStartSec; updateInputsFromSel(); redrawEdit(); });
+editCanvas.addEventListener('touchstart', e=>{ isDragging=true; selStartSec=xToSec(pointerX(e)); selEndSec=selStartSec; updateInputsFromSel(); redrawEdit(); e.preventDefault(); }, {passive:false});
+window.addEventListener('mousemove', e=>{ if(!isDragging) return; selEndSec=xToSec(pointerX(e)); updateInputsFromSel(); redrawEdit(); });
+editCanvas.addEventListener('touchmove', e=>{ if(!isDragging) return; selEndSec=xToSec(pointerX(e)); updateInputsFromSel(); redrawEdit(); e.preventDefault(); }, {passive:false});
+window.addEventListener('mouseup', ()=>{ finishDrag(); });
+editCanvas.addEventListener('touchend', ()=>{ finishDrag(); });
+function finishDrag(){
+  if(!isDragging) return;
+  isDragging=false;
+  if(selEndSec<selStartSec){ const t=selStartSec; selStartSec=selEndSec; selEndSec=t; updateInputsFromSel(); }
+  redrawEdit();
+}
+
+startTimeInput.addEventListener('change', ()=>{ selStartSec=parseTime(startTimeInput.value); redrawEdit(); });
+endTimeInput.addEventListener('change', ()=>{ selEndSec=parseTime(endTimeInput.value); redrawEdit(); });
+
+document.getElementById('playSelBtn').addEventListener('click', ()=>{
+  if(!editBuffer || selEndSec<=selStartSec) { alert('حدّد مقطعاً أولاً (اسحب على الموجة أو اكتب الوقت).'); return; }
+  const ctx = getCtx();
+  const src = ctx.createBufferSource();
+  src.buffer = editBuffer;
+  src.connect(ctx.destination);
+  src.start(0, selStartSec, selEndSec-selStartSec);
+});
+
+document.getElementById('deleteSelBtn').addEventListener('click', ()=>{
+  if(!editBuffer || selEndSec<=selStartSec){ alert('حدّد مقطعاً أولاً (اسحب على الموجة أو اكتب الوقت).'); return; }
+  editHistory.push(editBuffer);
+  editBuffer = removeRange(editBuffer, getCtx(), selStartSec, selEndSec);
+  selStartSec = 0; selEndSec = 0;
+  updateInputsFromSel();
+  redrawEdit();
+});
+
+document.getElementById('undoBtn').addEventListener('click', ()=>{
+  if(editHistory.length===0){ alert('لا يوجد ما تتراجع عنه.'); return; }
+  editBuffer = editHistory.pop();
+  selStartSec=0; selEndSec=0;
+  updateInputsFromSel();
+  redrawEdit();
+});
+
+document.getElementById('resetEditBtn').addEventListener('click', ()=>{
+  if(!originalDecodedBuffer) return;
+  editBuffer = cloneAudioBuffer(originalDecodedBuffer, getCtx());
+  editHistory = [];
+  selStartSec=0; selEndSec=0;
+  updateInputsFromSel();
+  redrawEdit();
+});
+
+async function handleFile(file){
   currentFile = file;
   fname.textContent = file.name;
   fsize.textContent = (file.size/1024/1024).toFixed(2)+' MB';
   filebar.style.display='flex';
-  processBtn.disabled = false;
   resultPanel.style.display='none';
+  editPanel.style.display='none';
+  processBtn.disabled = true;
+  processBtn.textContent = 'جارٍ فتح الملف...';
+  try{
+    originalDecodedBuffer = await decodeToBuffer(file);
+    editBuffer = cloneAudioBuffer(originalDecodedBuffer, getCtx());
+    editHistory = [];
+    selStartSec = 0; selEndSec = 0;
+    updateInputsFromSel();
+    editPanel.style.display = 'block';
+    redrawEdit();
+    processBtn.disabled = false;
+  }catch(err){
+    console.error(err);
+    alert('تعذّر فتح هذا الملف للمعاينة. جرّب ملف mp3 مباشرة، أو تأكد أن ملف mp4 يحتوي مساراً صوتياً مدعوماً.');
+  }finally{
+    processBtn.textContent = 'ابدأ التحسين';
+  }
 }
 
 function setStage(n, state){
@@ -458,11 +657,34 @@ function drawWave(canvas, buffer){
 
 // --- Core DSP ---
 
-async function decodeFile(file){
+let sharedCtx = null;
+function getCtx(){
+  if(!sharedCtx) sharedCtx = new (window.AudioContext || window.webkitAudioContext)();
+  return sharedCtx;
+}
+async function decodeToBuffer(file){
   const arrayBuf = await file.arrayBuffer();
-  const ctx = new (window.AudioContext || window.webkitAudioContext)();
-  const audioBuffer = await ctx.decodeAudioData(arrayBuf.slice(0));
-  return { audioBuffer, ctx };
+  const ctx = getCtx();
+  return await ctx.decodeAudioData(arrayBuf.slice(0));
+}
+
+// Removes a [startSec, endSec) time range from an AudioBuffer, splicing the
+// remaining audio together into a new (shorter) buffer.
+function removeRange(buffer, ctx, startSec, endSec){
+  const sr = buffer.sampleRate;
+  const startSample = Math.max(0, Math.floor(startSec*sr));
+  const endSample = Math.min(buffer.length, Math.floor(endSec*sr));
+  if(endSample <= startSample) return buffer;
+  const newLength = buffer.length - (endSample-startSample);
+  if(newLength <= 0) return buffer;
+  const newBuf = ctx.createBuffer(buffer.numberOfChannels, newLength, sr);
+  for(let ch=0; ch<buffer.numberOfChannels; ch++){
+    const data = buffer.getChannelData(ch);
+    const out = newBuf.getChannelData(ch);
+    out.set(data.subarray(0, startSample), 0);
+    out.set(data.subarray(endSample), startSample);
+  }
+  return newBuf;
 }
 
 // --- Real FFT (radix-2 Cooley-Tukey), in-place on Float32Arrays ---
@@ -665,18 +887,51 @@ function cloneAudioBuffer(buffer, ctx){
   return clone;
 }
 
-async function runEQAndCompression(buffer, tonal){
+function makeSaturationCurve(drive){
+  const n = 4096;
+  const curve = new Float32Array(n);
+  const k = Math.max(0.001, drive);
+  const norm = Math.tanh(k);
+  for(let i=0;i<n;i++){
+    const x = (i*2)/n - 1;
+    curve[i] = Math.tanh(k*x)/norm;
+  }
+  return curve;
+}
+
+function getModeParams(mode){
+  if(mode === 'documentary'){
+    return {
+      lowShelfFreq: 200, lowShelfDb: 2.5,
+      presenceFreq: 2600, presenceAdjust: -1,
+      airShelfFreq: 9000, airShelfDb: -3,
+      compThreshold: -26, compRatio: 3, compAttack: 0.005, compRelease: 0.3, knee: 22,
+      makeup: 1.7, saturation: 1.6
+    };
+  }
+  return {
+    lowShelfFreq: 200, lowShelfDb: 0,
+    presenceFreq: 3200, presenceAdjust: 0,
+    airShelfFreq: 9000, airShelfDb: 0,
+    compThreshold: -30, compRatio: 4.5, compAttack: 0.003, compRelease: 0.25, knee: 16,
+    makeup: 2.0, saturation: 0.05
+  };
+}
+
+async function runEQAndCompression(buffer, tonal, mode){
   const offlineCtx = new OfflineAudioContext(
     buffer.numberOfChannels, buffer.length, buffer.sampleRate
   );
   const source = offlineCtx.createBufferSource();
   source.buffer = buffer;
 
+  const params = getModeParams(mode);
+
   // Adapt EQ amounts to this specific recording instead of one fixed preset
   const lowRatio = tonal ? tonal.lowRatio : 0.25;
   const highRatio = tonal ? tonal.highRatio : 0.2;
   const mudCutDb = lowRatio > 0.35 ? -5 : (lowRatio < 0.15 ? -1.5 : -3);
-  const presenceDb = highRatio < 0.12 ? 6 : (highRatio > 0.3 ? 2 : 4);
+  const presenceDb = (highRatio < 0.12 ? 6 : (highRatio > 0.3 ? 2 : 4)) + params.presenceAdjust;
   const deEssDb = highRatio > 0.3 ? -5 : -3;
 
   const highpass = offlineCtx.createBiquadFilter();
@@ -689,9 +944,14 @@ async function runEQAndCompression(buffer, tonal){
   mudCut.Q.value = 1.0;
   mudCut.gain.value = mudCutDb; // reduce boxy/muddy tone
 
+  const lowShelf = offlineCtx.createBiquadFilter();
+  lowShelf.type = 'lowshelf';
+  lowShelf.frequency.value = params.lowShelfFreq;
+  lowShelf.gain.value = params.lowShelfDb; // documentary-style body/proximity warmth
+
   const presence = offlineCtx.createBiquadFilter();
   presence.type = 'peaking';
-  presence.frequency.value = 3200;
+  presence.frequency.value = params.presenceFreq;
   presence.Q.value = 1.0;
   presence.gain.value = presenceDb; // vocal clarity/presence boost
 
@@ -701,21 +961,33 @@ async function runEQAndCompression(buffer, tonal){
   deEss.Q.value = 2.0;
   deEss.gain.value = deEssDb; // tame harshness/sibilance
 
+  const airShelf = offlineCtx.createBiquadFilter();
+  airShelf.type = 'highshelf';
+  airShelf.frequency.value = params.airShelfFreq;
+  airShelf.gain.value = params.airShelfDb; // documentary-style darker, warmer top end
+
+  const shaper = offlineCtx.createWaveShaper();
+  shaper.curve = makeSaturationCurve(params.saturation);
+  shaper.oversample = '4x'; // subtle analog-like warmth/character
+
   const compressor = offlineCtx.createDynamicsCompressor();
-  compressor.threshold.value = -30;
-  compressor.knee.value = 16;
-  compressor.ratio.value = 4.5;
-  compressor.attack.value = 0.003;
-  compressor.release.value = 0.25;
+  compressor.threshold.value = params.compThreshold;
+  compressor.knee.value = params.knee;
+  compressor.ratio.value = params.compRatio;
+  compressor.attack.value = params.compAttack;
+  compressor.release.value = params.compRelease;
 
   const makeup = offlineCtx.createGain();
-  makeup.gain.value = 2.0;
+  makeup.gain.value = params.makeup;
 
   source.connect(highpass);
   highpass.connect(mudCut);
-  mudCut.connect(presence);
+  mudCut.connect(lowShelf);
+  lowShelf.connect(presence);
   presence.connect(deEss);
-  deEss.connect(compressor);
+  deEss.connect(airShelf);
+  airShelf.connect(shaper);
+  shaper.connect(compressor);
   compressor.connect(makeup);
   makeup.connect(offlineCtx.destination);
 
@@ -875,6 +1147,21 @@ function bufferToWav(buffer){
   return new Blob([bufferArr], {type:'audio/wav'});
 }
 
+let voiceMode = 'natural';
+const modeNaturalBtn = document.getElementById('modeNatural');
+const modeDocBtn = document.getElementById('modeDoc');
+const modeDesc = document.getElementById('modeDesc');
+modeNaturalBtn.addEventListener('click', ()=>{
+  voiceMode = 'natural';
+  modeNaturalBtn.classList.add('active'); modeDocBtn.classList.remove('active');
+  modeDesc.textContent = 'صوت واضح ومتوازن، أقرب لصوتك الطبيعي لكن أنظف وأثبت.';
+});
+modeDocBtn.addEventListener('click', ()=>{
+  voiceMode = 'documentary';
+  modeDocBtn.classList.add('active'); modeNaturalBtn.classList.remove('active');
+  modeDesc.textContent = 'دفء وعمق أكبر في الصوت، حدة أقل، وثبات ناعم — أقرب لصوت الراوي في الأفلام الوثائقية.';
+});
+
 let beforeUrl = null, afterUrl = null;
 const playerEl = document.getElementById('player');
 const btnBefore = document.getElementById('btnBefore');
@@ -899,7 +1186,8 @@ processBtn.addEventListener('click', async ()=>{
 
   try{
     setStage(1,'active');
-    const { audioBuffer, ctx } = await decodeFile(currentFile);
+    const ctx = getCtx();
+    const audioBuffer = cloneAudioBuffer(editBuffer, ctx); // start from the user-edited (cut) version
     const trimmed = trimSilence(audioBuffer, ctx);
     const original = cloneAudioBuffer(trimmed, ctx); // untouched copy for "before"
     await wait(200);
@@ -910,7 +1198,7 @@ processBtn.addEventListener('click', async ()=>{
     setStage(2,'done'); setStage(3,'active');
 
     const tonal = analyzeTonalBalance(trimmed);
-    let processed = await runEQAndCompression(trimmed, tonal);
+    let processed = await runEQAndCompression(trimmed, tonal, voiceMode);
     setStage(3,'done'); setStage(4,'active');
     await wait(150);
     setStage(4,'done'); setStage(5,'active');
@@ -950,4 +1238,4 @@ processBtn.addEventListener('click', async ()=>{
 });
 </script>
 </body>
-</html>
+      </html>
