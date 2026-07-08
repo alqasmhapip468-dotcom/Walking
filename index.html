@@ -147,7 +147,7 @@
   }
   #durationLabel{ color: var(--brass); font-family:'IBM Plex Sans Arabic'; font-weight:500; font-size:14px; }
   .edit-canvas{
-    width:100%; height:100px; display:block; background:#0f0d0a;
+    width:100%; height:124px; display:block; background:#0f0d0a;
     border:1px solid var(--line); border-radius:10px; touch-action:none; cursor:crosshair;
   }
   .time-row{ display:flex; gap:12px; margin-top:14px; }
@@ -210,8 +210,7 @@
     margin-top:14px; line-height:1.9; background:#0f0d0a;
     border:1px solid var(--line); border-radius:10px; padding:12px 14px;
   }
-</style>
-  <!-- Google tag (gtag.js) -->
+</style><!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-9X1B2PFWXD"></script>
 <script>
   window.dataLayer = window.dataLayer || [];
@@ -486,11 +485,18 @@ let editBuffer = null;            // working buffer, shrinks as user deletes cli
 let editHistory = [];             // stack of previous editBuffer states, for undo
 let selStartSec = 0, selEndSec = 0;
 let isDragging = false;
+let playheadSec = null;
+let previewSource = null, isPreviewPlaying = false, previewStartCtxTime = 0, previewSelStart = 0, previewSelDur = 0, previewRAF = null;
 
 function fmtTime(sec){
   sec = Math.max(0, sec||0);
   const m = Math.floor(sec/60), s = Math.floor(sec%60);
   return String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
+}
+function fmtPrecise(sec){
+  sec = Math.max(0, sec||0);
+  const m = Math.floor(sec/60), s = (sec%60).toFixed(1).padStart(4,'0');
+  return String(m).padStart(2,'0')+':'+s;
 }
 function parseTime(str){
   if(!str) return 0;
@@ -502,24 +508,36 @@ function updateInputsFromSel(){
   startTimeInput.value = fmtTime(selStartSec);
   endTimeInput.value = fmtTime(selEndSec);
 }
+function pickTickInterval(duration){
+  if(duration<=20) return 2;
+  if(duration<=60) return 5;
+  if(duration<=180) return 10;
+  if(duration<=600) return 30;
+  return 60;
+}
+const RULER_H = 24;
+
 function redrawEdit(){
   if(!editBuffer) return;
   durationLabel.textContent = fmtTime(editBuffer.duration);
   const ctx = editCanvas.getContext('2d');
   const dpr = window.devicePixelRatio || 1;
   const w = editCanvas.clientWidth, h = editCanvas.clientHeight;
+  const waveH = h - RULER_H;
   editCanvas.width = w*dpr; editCanvas.height = h*dpr;
   ctx.setTransform(dpr,0,0,dpr,0,0);
   ctx.clearRect(0,0,w,h);
+  const dur = editBuffer.duration || 1;
 
   // selection highlight (drawn first, waveform on top)
   if(selEndSec > selStartSec){
-    const x1 = (selStartSec/editBuffer.duration)*w;
-    const x2 = (selEndSec/editBuffer.duration)*w;
+    const x1 = (selStartSec/dur)*w;
+    const x2 = (selEndSec/dur)*w;
     ctx.fillStyle = 'rgba(181,83,63,0.35)';
-    ctx.fillRect(x1, 0, x2-x1, h);
+    ctx.fillRect(x1, 0, x2-x1, waveH);
   }
 
+  // waveform
   const data = editBuffer.getChannelData(0);
   const step = Math.ceil(data.length/w);
   ctx.strokeStyle = '#c9a15a';
@@ -531,11 +549,51 @@ function redrawEdit(){
       const idx = i*step+j;
       if(idx<data.length){ const v=data[idx]; if(v<min)min=v; if(v>max)max=v; }
     }
-    const y1=(1+min)*h/2, y2=(1+max)*h/2;
+    const y1=(1+min)*waveH/2, y2=(1+max)*waveH/2;
     ctx.moveTo(i,y1); ctx.lineTo(i,y2);
   }
   ctx.stroke();
+
+  // time ruler with numeric labels
+  ctx.strokeStyle = '#33291d';
+  ctx.beginPath(); ctx.moveTo(0, waveH+0.5); ctx.lineTo(w, waveH+0.5); ctx.stroke();
+  const tickInt = pickTickInterval(dur);
+  ctx.font = '10px IBM Plex Sans Arabic, sans-serif';
+  ctx.fillStyle = '#a89c88';
+  ctx.textBaseline = 'top';
+  for(let t=0; t<=dur; t+=tickInt){
+    const x = (t/dur)*w;
+    ctx.strokeStyle = '#7a6537';
+    ctx.beginPath(); ctx.moveTo(x, waveH); ctx.lineTo(x, waveH+5); ctx.stroke();
+    ctx.textAlign = x<15 ? 'left' : (x>w-15 ? 'right' : 'center');
+    ctx.fillText(fmtTime(t), x, waveH+7);
+  }
+
+  // precise boundary lines + labels for the current selection
+  function boundaryLine(x, label, color){
+    ctx.strokeStyle = color; ctx.setLineDash([3,3]);
+    ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,waveH); ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.font = '10px IBM Plex Sans Arabic, sans-serif';
+    const textW = ctx.measureText(label).width+8;
+    const boxX = Math.min(Math.max(x-textW/2,0), w-textW);
+    ctx.fillStyle = '#1c1712';
+    ctx.fillRect(boxX,2,textW,13);
+    ctx.fillStyle = color; ctx.textAlign='center'; ctx.textBaseline='top';
+    ctx.fillText(label, boxX+textW/2, 4);
+  }
+  if(selEndSec > selStartSec){
+    boundaryLine((selStartSec/dur)*w, fmtPrecise(selStartSec), '#c9a15a');
+    boundaryLine((selEndSec/dur)*w, fmtPrecise(selEndSec), '#c9a15a');
+  }
+  if(playheadSec !== null){
+    const px = (playheadSec/dur)*w;
+    ctx.strokeStyle = '#5c8a82'; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.moveTo(px,0); ctx.lineTo(px,waveH); ctx.stroke();
+    ctx.lineWidth = 1;
+  }
 }
+
 function xToSec(clientX){
   const rect = editCanvas.getBoundingClientRect();
   const x = Math.min(Math.max(clientX-rect.left, 0), rect.width);
@@ -543,8 +601,17 @@ function xToSec(clientX){
 }
 function pointerX(e){ return e.touches ? e.touches[0].clientX : e.clientX; }
 
-editCanvas.addEventListener('mousedown', e=>{ isDragging=true; selStartSec=xToSec(pointerX(e)); selEndSec=selStartSec; updateInputsFromSel(); redrawEdit(); });
-editCanvas.addEventListener('touchstart', e=>{ isDragging=true; selStartSec=xToSec(pointerX(e)); selEndSec=selStartSec; updateInputsFromSel(); redrawEdit(); e.preventDefault(); }, {passive:false});
+function stopPreview(){
+  if(previewSource){ try{ previewSource.stop(); }catch(e){} try{ previewSource.disconnect(); }catch(e){} previewSource=null; }
+  isPreviewPlaying = false;
+  document.getElementById('playSelBtn').textContent = '▶ تشغيل التحديد';
+  if(previewRAF) cancelAnimationFrame(previewRAF);
+  playheadSec = null;
+  redrawEdit();
+}
+
+editCanvas.addEventListener('mousedown', e=>{ stopPreview(); isDragging=true; selStartSec=xToSec(pointerX(e)); selEndSec=selStartSec; updateInputsFromSel(); redrawEdit(); });
+editCanvas.addEventListener('touchstart', e=>{ stopPreview(); isDragging=true; selStartSec=xToSec(pointerX(e)); selEndSec=selStartSec; updateInputsFromSel(); redrawEdit(); e.preventDefault(); }, {passive:false});
 window.addEventListener('mousemove', e=>{ if(!isDragging) return; selEndSec=xToSec(pointerX(e)); updateInputsFromSel(); redrawEdit(); });
 editCanvas.addEventListener('touchmove', e=>{ if(!isDragging) return; selEndSec=xToSec(pointerX(e)); updateInputsFromSel(); redrawEdit(); e.preventDefault(); }, {passive:false});
 window.addEventListener('mouseup', ()=>{ finishDrag(); });
@@ -556,20 +623,38 @@ function finishDrag(){
   redrawEdit();
 }
 
-startTimeInput.addEventListener('change', ()=>{ selStartSec=parseTime(startTimeInput.value); redrawEdit(); });
-endTimeInput.addEventListener('change', ()=>{ selEndSec=parseTime(endTimeInput.value); redrawEdit(); });
+startTimeInput.addEventListener('change', ()=>{ stopPreview(); selStartSec=parseTime(startTimeInput.value); redrawEdit(); });
+endTimeInput.addEventListener('change', ()=>{ stopPreview(); selEndSec=parseTime(endTimeInput.value); redrawEdit(); });
+
+function animatePlayhead(){
+  if(!isPreviewPlaying) return;
+  const elapsed = getCtx().currentTime - previewStartCtxTime;
+  playheadSec = previewSelStart + elapsed;
+  if(playheadSec >= previewSelStart+previewSelDur){ stopPreview(); return; }
+  redrawEdit();
+  previewRAF = requestAnimationFrame(animatePlayhead);
+}
 
 document.getElementById('playSelBtn').addEventListener('click', ()=>{
+  if(isPreviewPlaying){ stopPreview(); return; }
   if(!editBuffer || selEndSec<=selStartSec) { alert('حدّد مقطعاً أولاً (اسحب على الموجة أو اكتب الوقت).'); return; }
   const ctx = getCtx();
-  const src = ctx.createBufferSource();
-  src.buffer = editBuffer;
-  src.connect(ctx.destination);
-  src.start(0, selStartSec, selEndSec-selStartSec);
+  previewSource = ctx.createBufferSource();
+  previewSource.buffer = editBuffer;
+  previewSource.connect(ctx.destination);
+  previewSelStart = selStartSec;
+  previewSelDur = selEndSec-selStartSec;
+  previewStartCtxTime = ctx.currentTime;
+  previewSource.onended = ()=>{ if(isPreviewPlaying) stopPreview(); };
+  previewSource.start(0, previewSelStart, previewSelDur);
+  isPreviewPlaying = true;
+  document.getElementById('playSelBtn').textContent = '⏸ إيقاف الاستماع';
+  animatePlayhead();
 });
 
 document.getElementById('deleteSelBtn').addEventListener('click', ()=>{
   if(!editBuffer || selEndSec<=selStartSec){ alert('حدّد مقطعاً أولاً (اسحب على الموجة أو اكتب الوقت).'); return; }
+  stopPreview();
   editHistory.push(editBuffer);
   editBuffer = removeRange(editBuffer, getCtx(), selStartSec, selEndSec);
   selStartSec = 0; selEndSec = 0;
@@ -579,6 +664,7 @@ document.getElementById('deleteSelBtn').addEventListener('click', ()=>{
 
 document.getElementById('undoBtn').addEventListener('click', ()=>{
   if(editHistory.length===0){ alert('لا يوجد ما تتراجع عنه.'); return; }
+  stopPreview();
   editBuffer = editHistory.pop();
   selStartSec=0; selEndSec=0;
   updateInputsFromSel();
@@ -587,6 +673,7 @@ document.getElementById('undoBtn').addEventListener('click', ()=>{
 
 document.getElementById('resetEditBtn').addEventListener('click', ()=>{
   if(!originalDecodedBuffer) return;
+  stopPreview();
   editBuffer = cloneAudioBuffer(originalDecodedBuffer, getCtx());
   editHistory = [];
   selStartSec=0; selEndSec=0;
@@ -773,8 +860,8 @@ function spectralDenoise(buffer){
     // Pass C: spectral subtraction + breath softening + overlap-add reconstruction
     const output = new Float32Array(input.length);
     const winSumSq = new Float32Array(input.length);
-    const overSub = 1.8;     // how aggressively to subtract the noise print
-    const floorRatio = 0.06; // spectral floor to avoid musical/robotic artifacts
+    const overSub = 1.45;    // how aggressively to subtract the noise print (gentler = more natural, less metallic)
+    const floorRatio = 0.11; // spectral floor — higher = fewer robotic/musical-noise artifacts
     const magArr = new Float32Array(frameSize), phaseArr = new Float32Array(frameSize);
 
     for(let f=0; f<numFrames; f++){
@@ -902,19 +989,25 @@ function makeSaturationCurve(drive){
 function getModeParams(mode){
   if(mode === 'documentary'){
     return {
-      lowShelfFreq: 200, lowShelfDb: 2.5,
-      presenceFreq: 2600, presenceAdjust: -1,
-      airShelfFreq: 9000, airShelfDb: -3,
-      compThreshold: -26, compRatio: 3, compAttack: 0.005, compRelease: 0.3, knee: 22,
-      makeup: 1.7, saturation: 1.6
+      depthFreq: 110, depthDb: 2.8,               // chest-y low-end depth
+      lowShelfFreq: 180, lowShelfDb: 3.8,          // proximity warmth
+      presenceFreq: 2500, presenceQ: 0.85, presenceAdjust: -1.8,
+      deEssAdjust: -1.2,
+      airShelfFreq: 8000, airShelfDb: -4.2,        // darker, warmer top end
+      levelerThreshold: -24, levelerRatio: 2.7, levelerAttack: 0.02, levelerRelease: 0.45, levelerKnee: 26,
+      compThreshold: -25, compRatio: 2.8, compAttack: 0.008, compRelease: 0.4, knee: 24,
+      makeup: 1.55, saturation: 2.1
     };
   }
   return {
-    lowShelfFreq: 200, lowShelfDb: 0,
-    presenceFreq: 3200, presenceAdjust: 0,
-    airShelfFreq: 9000, airShelfDb: 0,
-    compThreshold: -30, compRatio: 4.5, compAttack: 0.003, compRelease: 0.25, knee: 16,
-    makeup: 2.0, saturation: 0.05
+    depthFreq: 130, depthDb: 1.0,                  // slight natural body, not boxy
+    lowShelfFreq: 200, lowShelfDb: 1.0,
+    presenceFreq: 3200, presenceQ: 0.9, presenceAdjust: 0,
+    deEssAdjust: 0.8,                               // a touch gentler than before — avoids thin/metallic tone
+    airShelfFreq: 10500, airShelfDb: -1.2,          // tiny natural roll-off, no harsh digital edge
+    levelerThreshold: -22, levelerRatio: 2.3, levelerAttack: 0.015, levelerRelease: 0.35, levelerKnee: 24,
+    compThreshold: -30, compRatio: 4, compAttack: 0.004, compRelease: 0.25, knee: 16,
+    makeup: 1.55, saturation: 0.2
   };
 }
 
@@ -932,7 +1025,7 @@ async function runEQAndCompression(buffer, tonal, mode){
   const highRatio = tonal ? tonal.highRatio : 0.2;
   const mudCutDb = lowRatio > 0.35 ? -5 : (lowRatio < 0.15 ? -1.5 : -3);
   const presenceDb = (highRatio < 0.12 ? 6 : (highRatio > 0.3 ? 2 : 4)) + params.presenceAdjust;
-  const deEssDb = highRatio > 0.3 ? -5 : -3;
+  const deEssDb = (highRatio > 0.3 ? -4 : -2) + params.deEssAdjust;
 
   const highpass = offlineCtx.createBiquadFilter();
   highpass.type = 'highpass';
@@ -944,32 +1037,48 @@ async function runEQAndCompression(buffer, tonal, mode){
   mudCut.Q.value = 1.0;
   mudCut.gain.value = mudCutDb; // reduce boxy/muddy tone
 
+  // First leveling stage: slow, gentle — evens out quiet/loud words before
+  // any tonal shaping, so the compressor further down only has to catch peaks.
+  const leveler = offlineCtx.createDynamicsCompressor();
+  leveler.threshold.value = params.levelerThreshold;
+  leveler.knee.value = params.levelerKnee;
+  leveler.ratio.value = params.levelerRatio;
+  leveler.attack.value = params.levelerAttack;
+  leveler.release.value = params.levelerRelease;
+
+  const depthPeak = offlineCtx.createBiquadFilter();
+  depthPeak.type = 'peaking';
+  depthPeak.frequency.value = params.depthFreq;
+  depthPeak.Q.value = 1.0;
+  depthPeak.gain.value = params.depthDb; // low-end body/depth
+
   const lowShelf = offlineCtx.createBiquadFilter();
   lowShelf.type = 'lowshelf';
   lowShelf.frequency.value = params.lowShelfFreq;
-  lowShelf.gain.value = params.lowShelfDb; // documentary-style body/proximity warmth
+  lowShelf.gain.value = params.lowShelfDb; // proximity warmth
 
   const presence = offlineCtx.createBiquadFilter();
   presence.type = 'peaking';
   presence.frequency.value = params.presenceFreq;
-  presence.Q.value = 1.0;
+  presence.Q.value = params.presenceQ;
   presence.gain.value = presenceDb; // vocal clarity/presence boost
 
   const deEss = offlineCtx.createBiquadFilter();
   deEss.type = 'peaking';
   deEss.frequency.value = 7000;
   deEss.Q.value = 2.0;
-  deEss.gain.value = deEssDb; // tame harshness/sibilance
+  deEss.gain.value = deEssDb; // tame harshness/sibilance/metallic edge
 
   const airShelf = offlineCtx.createBiquadFilter();
   airShelf.type = 'highshelf';
   airShelf.frequency.value = params.airShelfFreq;
-  airShelf.gain.value = params.airShelfDb; // documentary-style darker, warmer top end
+  airShelf.gain.value = params.airShelfDb; // warmer, less digital/metallic top end
 
   const shaper = offlineCtx.createWaveShaper();
   shaper.curve = makeSaturationCurve(params.saturation);
   shaper.oversample = '4x'; // subtle analog-like warmth/character
 
+  // Second stage: catches remaining peaks for a tight, consistent final level.
   const compressor = offlineCtx.createDynamicsCompressor();
   compressor.threshold.value = params.compThreshold;
   compressor.knee.value = params.knee;
@@ -982,7 +1091,9 @@ async function runEQAndCompression(buffer, tonal, mode){
 
   source.connect(highpass);
   highpass.connect(mudCut);
-  mudCut.connect(lowShelf);
+  mudCut.connect(leveler);
+  leveler.connect(depthPeak);
+  depthPeak.connect(lowShelf);
   lowShelf.connect(presence);
   presence.connect(deEss);
   deEss.connect(airShelf);
@@ -1238,4 +1349,4 @@ processBtn.addEventListener('click', async ()=>{
 });
 </script>
 </body>
-      </html>
+</html>
