@@ -1,11 +1,51 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="ar" dir="rtl" id="htmlRoot">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>صقل — تحسين جودة الصوت</title>
+<title>صقل — تحسين جودة الصوت مجاناً بدون حدود | Saql: Free Audio Enhancer & Noise Remover</title>
+<meta name="description" content="صقل: أداة مجانية بالكامل لتحسين جودة الصوت وإزالة الضجيج من التسجيلات مباشرة من متصفحك، بدون تسجيل حساب وبدون أي حدود استخدام. Saql is a 100% free online audio enhancer — remove background noise, clean up voice recordings, and export MP3/WAV. No sign-up, no limits, fully private (runs entirely in your browser).">
+<meta name="keywords" content="تحسين جودة الصوت, إزالة الضجيج من التسجيل, تنظيف الصوت, أداة صوت مجانية, audio enhancer, voice cleaner, remove background noise online free, noise reduction online, mp3 wav converter">
+<meta name="robots" content="index, follow">
+<meta name="author" content="G.M Habib">
+<link rel="canonical" href="https://468-dotcom.github.io/saql/">
+<link rel="alternate" hreflang="ar" href="https://468-dotcom.github.io/saql/">
+<link rel="alternate" hreflang="en" href="https://468-dotcom.github.io/saql/">
+<link rel="alternate" hreflang="x-default" href="https://468-dotcom.github.io/saql/">
+
+<meta property="og:type" content="website">
+<meta property="og:title" content="صقل — Saql | تحسين جودة الصوت مجاناً بدون حدود">
+<meta property="og:description" content="أداة مجانية بالكامل تعمل داخل متصفحك لإزالة الضجيج وتحسين جودة الصوت — بدون تسجيل، بدون حدود، بدون رفع ملفاتك لأي سيرفر. Free browser-based audio enhancer & noise remover — no sign-up, no limits.">
+<meta property="og:url" content="https://468-dotcom.github.io/saql/">
+<meta property="og:locale" content="ar_AR">
+<meta property="og:locale:alternate" content="en_US">
+<meta property="og:site_name" content="صقل | Saql">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="صقل — Saql | تحسين جودة الصوت مجاناً بدون حدود">
+<meta name="twitter:description" content="أداة مجانية بالكامل لإزالة الضجيج وتحسين جودة الصوت داخل متصفحك — بدون تسجيل وبدون حدود. Free browser-based audio enhancer & noise remover.">
+
+<meta name="theme-color" content="#15120e">
 <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://cdn.jsdelivr.net">
+<link rel="preconnect" href="https://cdnjs.cloudflare.com">
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&family=IBM+Plex+Sans+Arabic:wght@300;400;500&display=swap" rel="stylesheet">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "صقل (Saql)",
+  "alternateName": "Saql Audio Enhancer",
+  "url": "https://468-dotcom.github.io/saql/",
+  "description": "أداة مجانية بالكامل تعمل داخل المتصفح لإزالة الضجيج وتحسين جودة الصوت وتصديره بصيغ MP3 وWAV، بدون تسجيل حساب وبدون حدود استخدام. Free browser-based tool to remove background noise and enhance voice recordings.",
+  "applicationCategory": "MultimediaApplication",
+  "operatingSystem": "Any (Web Browser)",
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+  "inLanguage": ["ar", "en"]
+}
+</script>
 <style>
   :root{
     --bg: #15120e;
@@ -135,7 +175,35 @@
   .footer{ text-align:center; color:var(--cream-dim); font-size:12.5px; margin-top:30px; line-height:2; }
   .footer b{ color:var(--brass); }
 
-  .mode-toggle{ display:flex; gap:8px; margin-bottom:12px; }
+  .lang-row{ display:flex; justify-content:flex-end; margin-bottom:10px; }
+  .lang-btn{
+    background:none; border:1px solid var(--brass-dim); color:var(--brass);
+    font-family:'Cairo'; font-weight:600; font-size:13px; padding:7px 14px;
+    border-radius:20px; cursor:pointer;
+  }
+  .h1-sub{ font-size:0.32em; color:var(--cream-dim); font-weight:400; vertical-align:middle; margin-inline-start:8px; }
+  .free-badges{
+    display:flex; flex-wrap:wrap; justify-content:center; gap:8px 14px;
+    margin-top:16px; font-size:12.5px; color:var(--teal);
+  }
+  .seo-intro{ margin-bottom:24px; }
+  .seo-intro h2{
+    font-family:'Cairo'; font-weight:700; font-size:20px; color:var(--cream);
+    margin-bottom:10px; text-align:center;
+  }
+  .seo-intro > p{
+    color: var(--cream-dim); font-size:14.5px; line-height:1.9; text-align:center;
+    max-width:620px; margin:0 auto 20px;
+  }
+  .feature-grid{
+    display:grid; grid-template-columns:1fr 1fr; gap:14px;
+  }
+  @media (max-width:520px){ .feature-grid{ grid-template-columns:1fr; } }
+  .feature-grid h3{
+    font-family:'Cairo'; font-size:14.5px; color:var(--brass); margin-bottom:5px;
+  }
+  .feature-grid p{ font-size:13px; color:var(--cream-dim); line-height:1.7; }
+
   .mode-btn{
     flex:1; background:#0f0d0a; border:1px solid var(--line); color:var(--cream-dim);
     font-family:'Cairo'; font-weight:700; font-size:14px; padding:12px 6px; border-radius:10px; cursor:pointer;
@@ -210,27 +278,37 @@
     margin-top:14px; line-height:1.9; background:#0f0d0a;
     border:1px solid var(--line); border-radius:10px; padding:12px 14px;
   }
-</style><!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-9X1B2PFWXD"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-9X1B2PFWXD');
-</script>
+</style>
+  <!-- Google tag (gtag.js) -->  <script async src="https://www.googletagmanager.com/gtag/js?id=G-9X1B2PFWXD"></script>  <script>  
+  window.dataLayer = window.dataLayer || [];  
+  function gtag(){dataLayer.push(arguments);}  
+  gtag('js', new Date());  
+  
+  gtag('config', 'G-9X1B2PFWXD');  
+  </script>
 </head>
 <body>
 <div class="wrap">
 
+  <div class="lang-row">
+    <button class="lang-btn" id="langToggle" aria-label="Switch language / تبديل اللغة">🌐 English</button>
+  </div>
+
   <header>
-    <div class="eyebrow">استوديو رقمي · بدون اشتراك · بدون رفع لأي سيرفر</div>
-    <h1>ص<span>قل</span></h1>
-    <p class="tagline">ارفع تسجيلك الخام، ويخرج بجودة أقرب لصوت الاستوديو: ضوضاء أقل، ترددات متزنة، وصوت أكثر ثباتاً ووضوحاً.</p>
+    <div class="eyebrow" data-ar="استوديو رقمي · مجاني بالكامل · بدون حدود · بدون رفع لأي سيرفر" data-en="Free Browser Studio · No Limits · No Sign-up · 100% Private">استوديو رقمي · مجاني بالكامل · بدون حدود · بدون رفع لأي سيرفر</div>
+    <h1>ص<span>قل</span> <span class="h1-sub">Saql</span></h1>
+    <p class="tagline" data-ar="أداة مجانية بالكامل لتحسين جودة الصوت وإزالة الضجيج من تسجيلاتك — مباشرة داخل متصفحك، بدون تسجيل حساب وبدون أي حد لعدد الملفات أو مدة الصوت." data-en="A 100% free audio enhancer and background-noise remover that runs entirely in your browser — no account, no daily limits, no file-count or duration caps.">أداة مجانية بالكامل لتحسين جودة الصوت وإزالة الضجيج من تسجيلاتك — مباشرة داخل متصفحك، بدون تسجيل حساب وبدون أي حد لعدد الملفات أو مدة الصوت.</p>
+    <div class="free-badges">
+      <span data-ar="✔ مجاني 100%" data-en="✔ 100% Free">✔ مجاني 100%</span>
+      <span data-ar="✔ بدون تسجيل دخول" data-en="✔ No sign-up">✔ بدون تسجيل دخول</span>
+      <span data-ar="✔ بدون حدود استخدام" data-en="✔ No usage limits">✔ بدون حدود استخدام</span>
+      <span data-ar="✔ خصوصية كاملة (client-side)" data-en="✔ 100% private (client-side)">✔ خصوصية كاملة (client-side)</span>
+    </div>
   </header>
 
   <div class="mark">
-    <svg viewBox="0 0 64 64" fill="none">
+    <svg viewBox="0 0 64 64" fill="none" role="img" aria-label="شعار صقل — دائرة استوديو صوتي">
+      <title>شعار موقع صقل لتحسين الصوت</title>
       <circle cx="32" cy="32" r="30" stroke="#7a6537" stroke-width="1.5"/>
       <circle cx="32" cy="32" r="21" stroke="#c9a15a" stroke-width="1.5"/>
       <circle cx="32" cy="32" r="3.5" fill="#c9a15a"/>
@@ -238,25 +316,48 @@
     </svg>
   </div>
 
+  <section class="seo-intro">
+    <h2 data-ar="ماذا يفعل صقل؟" data-en="What does Saql do?">ماذا يفعل صقل؟</h2>
+    <p data-ar="صقل يحوّل تسجيل الصوت الخام (من الهاتف أو أي مايك عادي) إلى صوت أنظف وأوضح: يزيل الضجيج والهسهسة الخلفية، يوازن الترددات، يثبّت مستوى الصوت، ويصدّر النتيجة كملف MP3 أو WAV — كل ذلك دون رفع ملفك لأي سيرفر خارجي." data-en="Saql turns a raw recording (from your phone or any basic mic) into clean, clear audio: it removes background noise and hiss, balances frequencies, stabilizes volume, and exports the result as MP3 or WAV — all without ever uploading your file to a server.">صقل يحوّل تسجيل الصوت الخام (من الهاتف أو أي مايك عادي) إلى صوت أنظف وأوضح: يزيل الضجيج والهسهسة الخلفية، يوازن الترددات، يثبّت مستوى الصوت، ويصدّر النتيجة كملف MP3 أو WAV — كل ذلك دون رفع ملفك لأي سيرفر خارجي.</p>
+    <div class="feature-grid">
+      <div>
+        <h3 data-ar="🧹 إزالة الضجيج" data-en="🧹 Noise Removal">🧹 إزالة الضجيج</h3>
+        <p data-ar="تحليل طيفي حقيقي يتعلّم بصمة الضوضاء ويزيلها دون قطع الصوت." data-en="Real spectral analysis learns your noise profile and removes it without chopping the audio.">تحليل طيفي حقيقي يتعلّم بصمة الضوضاء ويزيلها دون قطع الصوت.</p>
+      </div>
+      <div>
+        <h3 data-ar="🎚️ EQ وضغط تكيّفي" data-en="🎚️ Adaptive EQ & Compression">🎚️ EQ وضغط تكيّفي</h3>
+        <p data-ar="يحلل نبرة صوتك ويضبط الترددات وثبات المستوى تلقائياً." data-en="Analyzes your voice tone and automatically tunes frequencies and level consistency.">يحلل نبرة صوتك ويضبط الترددات وثبات المستوى تلقائياً.</p>
+      </div>
+      <div>
+        <h3 data-ar="✂️ مونتاج وقص" data-en="✂️ Editing & Trimming">✂️ مونتاج وقص</h3>
+        <p data-ar="احذف المقاطع غير المرغوبة بصرياً على شكل الموجة قبل التصدير." data-en="Visually cut out unwanted sections on the waveform before exporting.">احذف المقاطع غير المرغوبة بصرياً على شكل الموجة قبل التصدير.</p>
+      </div>
+      <div>
+        <h3 data-ar="🔒 خصوصية تامة" data-en="🔒 Full Privacy">🔒 خصوصية تامة</h3>
+        <p data-ar="كل المعالجة تتم داخل متصفحك؛ ملفك لا يُرسَل لأي خادم." data-en="All processing happens in your browser; your file is never sent to a server.">كل المعالجة تتم داخل متصفحك؛ ملفك لا يُرسَل لأي خادم.</p>
+      </div>
+    </div>
+  </section>
+
   <div class="tabs">
-    <button class="tab active" id="tabRecord">🎙️ سجّل بالمايك</button>
-    <button class="tab" id="tabUpload">⬆ ارفع ملف</button>
+    <button class="tab active" id="tabRecord" data-ar="🎙️ سجّل بالمايك" data-en="🎙️ Record">🎙️ سجّل بالمايك</button>
+    <button class="tab" id="tabUpload" data-ar="⬆ ارفع ملف" data-en="⬆ Upload File">⬆ ارفع ملف</button>
   </div>
 
   <div class="panel" id="recordPanel">
     <div class="rec-visual" id="levelBars"></div>
     <div class="rec-time" id="recTime">00:00</div>
-    <button class="rec-btn" id="recBtn">ابدأ التسجيل</button>
-    <div class="rec-tip">
+    <button class="rec-btn" id="recBtn" data-ar="ابدأ التسجيل" data-en="Start Recording">ابدأ التسجيل</button>
+    <div class="rec-tip" data-ar="نصائح لصوت أفضل حتى بهاتفك: سجّل في غرفة صغيرة فيها ملابس أو ستائر (تمتص الصدى)، أمسك الهاتف على بعد 15–20 سم من فمك وقليلاً من الجانب، أوقف المروحة/المكيف، وتجنّب لمس الهاتف أثناء الكلام." data-en="Tips for better sound even on a phone: record in a small room with clothes or curtains (they absorb echo), hold the phone 15–20cm from your mouth slightly off to the side, turn off fans/AC, and avoid touching the phone while speaking.">
       نصائح لصوت أفضل حتى بهاتفك: سجّل في غرفة صغيرة فيها ملابس أو ستائر (تمتص الصدى)، أمسك الهاتف على بعد 15–20 سم من فمك وقليلاً من الجانب، أوقف المروحة/المكيف، وتجنّب لمس الهاتف أثناء الكلام.
     </div>
   </div>
 
   <div class="panel" id="uploadPanel" style="display:none;">
     <div id="dropzone">
-      <div class="icon">📁</div>
-      <div class="title">اسحب الملف هنا أو اضغط للاختيار</div>
-      <div class="sub">يدعم MP3 وملفات MP4 (سيُستخرج الصوت منها)</div>
+      <div class="icon" aria-hidden="true">📁</div>
+      <div class="title" data-ar="اسحب الملف هنا أو اضغط للاختيار" data-en="Drag a file here or tap to choose">اسحب الملف هنا أو اضغط للاختيار</div>
+      <div class="sub" data-ar="يدعم MP3 وملفات MP4 (سيُستخرج الصوت منها)" data-en="Supports MP3 and MP4 files (audio will be extracted)">يدعم MP3 وملفات MP4 (سيُستخرج الصوت منها)</div>
       <input type="file" id="fileInput" accept="audio/*,video/mp4,.mp3,.mp4,.m4a,.wav">
     </div>
     <div class="filebar" id="filebar">
@@ -264,58 +365,58 @@
         <div class="name" id="fname"></div>
         <div class="size" id="fsize"></div>
       </div>
-      <button id="clearBtn">إزالة</button>
+      <button id="clearBtn" data-ar="إزالة" data-en="Remove">إزالة</button>
     </div>
   </div>
 
   <div class="panel" id="editPanel" style="display:none;">
     <div class="edit-head">
-      <span>✂️ قص المقاطع غير المرغوبة</span>
+      <span data-ar="✂️ قص المقاطع غير المرغوبة" data-en="✂️ Trim Unwanted Sections">✂️ قص المقاطع غير المرغوبة</span>
       <span id="durationLabel">00:00</span>
     </div>
-    <canvas id="editCanvas" class="edit-canvas"></canvas>
+    <canvas id="editCanvas" class="edit-canvas" role="img" aria-label="شكل موجة الصوت لتحديد مقاطع القص"></canvas>
     <div class="time-row">
       <div class="time-field">
-        <label>من</label>
+        <label data-ar="من" data-en="From">من</label>
         <input type="text" id="startTimeInput" value="00:00" inputmode="numeric">
       </div>
       <div class="time-field">
-        <label>إلى</label>
+        <label data-ar="إلى" data-en="To">إلى</label>
         <input type="text" id="endTimeInput" value="00:00" inputmode="numeric">
       </div>
     </div>
     <div class="edit-actions">
-      <button class="edit-btn" id="playSelBtn">▶ تشغيل التحديد</button>
-      <button class="edit-btn danger" id="deleteSelBtn">🗑 احذف المحدد</button>
-      <button class="edit-btn" id="undoBtn">↩ تراجع</button>
-      <button class="edit-btn" id="resetEditBtn">🔄 استعادة الأصل</button>
+      <button class="edit-btn" id="playSelBtn" data-ar="▶ تشغيل التحديد" data-en="▶ Play Selection">▶ تشغيل التحديد</button>
+      <button class="edit-btn danger" id="deleteSelBtn" data-ar="🗑 احذف المحدد" data-en="🗑 Delete Selection">🗑 احذف المحدد</button>
+      <button class="edit-btn" id="undoBtn" data-ar="↩ تراجع" data-en="↩ Undo">↩ تراجع</button>
+      <button class="edit-btn" id="resetEditBtn" data-ar="🔄 استعادة الأصل" data-en="🔄 Reset to Original">🔄 استعادة الأصل</button>
     </div>
-    <div class="rec-tip">اسحب على الموجة لتحديد المقطع (أو اكتب الوقت يدوياً)، اضغط "تشغيل التحديد" للتأكد، ثم "احذف المحدد". يمكنك تكرار ذلك لعدة مقاطع قبل الضغط على "ابدأ التحسين".</div>
+    <div class="rec-tip" data-ar='اسحب على الموجة لتحديد المقطع (أو اكتب الوقت يدوياً)، اضغط "تشغيل التحديد" للتأكد، ثم "احذف المحدد". يمكنك تكرار ذلك لعدة مقاطع قبل الضغط على "ابدأ التحسين".' data-en='Drag on the waveform to select a section (or type the time manually), tap "Play Selection" to confirm, then "Delete Selection". Repeat for multiple clips before tapping "Enhance".'>اسحب على الموجة لتحديد المقطع (أو اكتب الوقت يدوياً)، اضغط "تشغيل التحديد" للتأكد، ثم "احذف المحدد". يمكنك تكرار ذلك لعدة مقاطع قبل الضغط على "ابدأ التحسين".</div>
   </div>
 
   <div class="panel">
     <div class="mode-toggle">
-      <button class="mode-btn active" id="modeNatural">🎙️ صوت طبيعي محسّن</button>
-      <button class="mode-btn" id="modeDoc">🎬 وضع وثائقي</button>
+      <button class="mode-btn active" id="modeNatural" data-ar="🎙️ صوت طبيعي محسّن" data-en="🎙️ Natural Enhanced">🎙️ صوت طبيعي محسّن</button>
+      <button class="mode-btn" id="modeDoc" data-ar="🎬 وضع وثائقي" data-en="🎬 Documentary Mode">🎬 وضع وثائقي</button>
     </div>
-    <div class="rec-tip" id="modeDesc">صوت واضح ومتوازن، أقرب لصوتك الطبيعي لكن أنظف وأثبت.</div>
+    <div class="rec-tip" id="modeDesc" data-ar="صوت واضح ومتوازن، أقرب لصوتك الطبيعي لكن أنظف وأثبت." data-en="Clear, balanced sound — close to your natural voice, just cleaner and steadier.">صوت واضح ومتوازن، أقرب لصوتك الطبيعي لكن أنظف وأثبت.</div>
 
     <div class="stages" id="stages">
-      <div class="stage" data-s="1"><div class="dot"></div><div>فك التشفير وقصّ الصمت الزائد من البداية والنهاية</div></div>
-      <div class="stage" data-s="2"><div class="dot"></div><div>إزالة الضوضاء طيفياً وتخفيف صوت التنفس بين الجمل</div></div>
-      <div class="stage" data-s="3"><div class="dot"></div><div>تحليل نبرة صوتك وضبط الترددات تلقائياً (EQ تكيّفي)</div></div>
-      <div class="stage" data-s="4"><div class="dot"></div><div>ضغط الديناميكية لثبات المستوى (Compressor)</div></div>
-      <div class="stage" data-s="5"><div class="dot"></div><div>رفع مستوى الصوت وتثبيته (Loudness Normalize)</div></div>
-      <div class="stage" data-s="6"><div class="dot"></div><div>حد أقصى آمن ضد التشويه وتصدير WAV/MP3 (Limiter)</div></div>
+      <div class="stage" data-s="1"><div class="dot"></div><div data-ar="فك التشفير وقصّ الصمت الزائد من البداية والنهاية" data-en="Decoding and trimming excess silence from start/end">فك التشفير وقصّ الصمت الزائد من البداية والنهاية</div></div>
+      <div class="stage" data-s="2"><div class="dot"></div><div data-ar="إزالة الضوضاء طيفياً وتخفيف صوت التنفس بين الجمل" data-en="Spectral noise removal and softening breath sounds">إزالة الضوضاء طيفياً وتخفيف صوت التنفس بين الجمل</div></div>
+      <div class="stage" data-s="3"><div class="dot"></div><div data-ar="تحليل نبرة صوتك وضبط الترددات تلقائياً (EQ تكيّفي)" data-en="Analyzing your tone and auto-tuning frequencies (adaptive EQ)">تحليل نبرة صوتك وضبط الترددات تلقائياً (EQ تكيّفي)</div></div>
+      <div class="stage" data-s="4"><div class="dot"></div><div data-ar="ضغط الديناميكية لثبات المستوى (Compressor)" data-en="Dynamics compression for level stability">ضغط الديناميكية لثبات المستوى (Compressor)</div></div>
+      <div class="stage" data-s="5"><div class="dot"></div><div data-ar="رفع مستوى الصوت وتثبيته (Loudness Normalize)" data-en="Raising and stabilizing loudness (normalize)">رفع مستوى الصوت وتثبيته (Loudness Normalize)</div></div>
+      <div class="stage" data-s="6"><div class="dot"></div><div data-ar="حد أقصى آمن ضد التشويه وتصدير WAV/MP3 (Limiter)" data-en="Safe limiter against distortion and WAV/MP3 export">حد أقصى آمن ضد التشويه وتصدير WAV/MP3 (Limiter)</div></div>
     </div>
 
-    <button class="primary" id="processBtn" disabled>ابدأ التحسين</button>
+    <button class="primary" id="processBtn" disabled data-ar="ابدأ التحسين" data-en="Start Enhancing">ابدأ التحسين</button>
   </div>
 
   <div class="panel result" id="resultPanel">
     <div class="waves">
       <div class="wave-card">
-        <div class="lbl"><span>قبل</span><span>خام</span></div>
+        <div class="lbl"><span data-ar="قبل" data-en="Before">قبل</span><span data-ar="خام" data-en="Raw">خام</span></div>
         <canvas id="waveBefore"></canvas>
       </div>
       <div class="wave-card">
@@ -324,24 +425,50 @@
       </div>
     </div>
     <div class="ab-toggle" id="abToggle">
-      <button class="ab-btn" id="btnBefore">▶ قبل</button>
-      <button class="ab-btn active" id="btnAfter">▶ بعد</button>
+      <button class="ab-btn" id="btnBefore" data-ar="▶ قبل" data-en="▶ Before">▶ قبل</button>
+      <button class="ab-btn active" id="btnAfter" data-ar="▶ بعد" data-en="▶ After">▶ بعد</button>
     </div>
     <audio id="player" controls></audio>
     <div class="dl-row">
-      <a class="dl" id="downloadLink" download="saql-enhanced.wav">⬇ WAV (جودة أعلى)</a>
-      <a class="dl dl-mp3" id="downloadMp3Link" download="saql-enhanced.mp3">⬇ MP3 (حجم أصغر)</a>
+      <a class="dl" id="downloadLink" download="saql-enhanced.wav" data-ar="⬇ WAV (جودة أعلى)" data-en="⬇ WAV (higher quality)">⬇ WAV (جودة أعلى)</a>
+      <a class="dl dl-mp3" id="downloadMp3Link" download="saql-enhanced.mp3" data-ar="⬇ MP3 (حجم أصغر)" data-en="⬇ MP3 (smaller size)">⬇ MP3 (حجم أصغر)</a>
     </div>
-    <div class="note">تم كل شيء داخل متصفحك — لم يُرسَل ملفك لأي خادم.</div>
+    <div class="note" data-ar="تم كل شيء داخل متصفحك — لم يُرسَل ملفك لأي خادم." data-en="Everything happened in your browser — your file was never sent to a server.">تم كل شيء داخل متصفحك — لم يُرسَل ملفك لأي خادم.</div>
   </div>
 
-  <div class="footer">
-    صُنع بمعالجة صوت حقيقية عبر <b>Web Audio API</b> — بدون مفاتيح API وبدون تكلفة لكل استخدام.
-  </div>
+  <footer class="footer" data-ar="صُنع بمعالجة صوت حقيقية عبر Web Audio API — مجاني بالكامل، بدون حساب، وبدون أي حدود استخدام." data-en="Built with real audio processing via the Web Audio API — 100% free, no account, no usage limits.">
+    صُنع بمعالجة صوت حقيقية عبر Web Audio API — مجاني بالكامل، بدون حساب، وبدون أي حدود استخدام.
+  </footer>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/fix-webm-duration@1.0.6/fix-webm-duration.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/lamejs/1.2.1/lame.min.js"></script>
 <script>
+let currentLang = 'ar';
+function t(ar, en){ return currentLang==='ar' ? ar : en; }
+
+const TITLE_AR = 'صقل — تحسين جودة الصوت مجاناً بدون حدود | Saql: Free Audio Enhancer & Noise Remover';
+const TITLE_EN = 'Saql — Free Audio Enhancer & Noise Remover | صقل: تحسين جودة الصوت مجاناً';
+const DESC_AR = 'صقل: أداة مجانية بالكامل لتحسين جودة الصوت وإزالة الضجيج من التسجيلات مباشرة من متصفحك، بدون تسجيل حساب وبدون أي حدود استخدام.';
+const DESC_EN = 'Saql is a 100% free online audio enhancer — remove background noise, clean up voice recordings, and export MP3/WAV. No sign-up, no limits, fully private.';
+
+function applyLanguage(){
+  document.querySelectorAll('[data-ar][data-en]').forEach(el=>{
+    el.textContent = currentLang==='ar' ? el.getAttribute('data-ar') : el.getAttribute('data-en');
+  });
+  const html = document.getElementById('htmlRoot');
+  html.lang = currentLang;
+  html.dir = currentLang==='ar' ? 'rtl' : 'ltr';
+  document.title = currentLang==='ar' ? TITLE_AR : TITLE_EN;
+  const metaDesc = document.querySelector('meta[name="description"]');
+  if(metaDesc) metaDesc.setAttribute('content', currentLang==='ar' ? DESC_AR : DESC_EN);
+  document.getElementById('langToggle').textContent = currentLang==='ar' ? '🌐 English' : '🌐 العربية';
+}
+document.getElementById('langToggle').addEventListener('click', ()=>{
+  currentLang = currentLang==='ar' ? 'en' : 'ar';
+  applyLanguage();
+});
+
 const dropzone = document.getElementById('dropzone');
 const fileInput = document.getElementById('fileInput');
 const filebar = document.getElementById('filebar');
@@ -379,7 +506,7 @@ const barEls = Array.from(levelBars.children);
 const recBtn = document.getElementById('recBtn');
 const recTime = document.getElementById('recTime');
 let mediaRecorder, recordedChunks = [], micStream, meterCtx, analyser, meterRAF;
-let recording = false, recSeconds = 0, recTimerInterval;
+let recording = false, recSeconds = 0, recTimerInterval, recStartTimestamp = 0;
 
 recBtn.addEventListener('click', async ()=>{
   if(!recording){
@@ -398,17 +525,28 @@ recBtn.addEventListener('click', async ()=>{
     }
     mediaRecorder = mimeType ? new MediaRecorder(micStream, {mimeType}) : new MediaRecorder(micStream);
     mediaRecorder.ondataavailable = e=>{ if(e.data.size>0) recordedChunks.push(e.data); };
-    mediaRecorder.onstop = ()=>{
-      const blob = new Blob(recordedChunks, {type: mediaRecorder.mimeType || 'audio/webm'});
-      const pseudoFile = new File([blob], 'تسجيل-مباشر.webm', {type: blob.type});
-      handleFile(pseudoFile);
+    mediaRecorder.onstop = async ()=>{
       micStream.getTracks().forEach(t=>t.stop());
+      const realDurationMs = Date.now() - recStartTimestamp;
+      const rawType = mediaRecorder.mimeType || 'audio/webm';
+      const buggyBlob = new Blob(recordedChunks, {type: rawType});
+      let finalBlob = buggyBlob;
+      // Chrome/Android MediaRecorder webm files are missing proper duration
+      // metadata, which makes decodeAudioData silently cut recordings short.
+      // Patch the real duration into the file before using it anywhere.
+      if(rawType.includes('webm') && window.ysFixWebmDuration){
+        try{ finalBlob = await ysFixWebmDuration(buggyBlob, realDurationMs, {logger:false}); }
+        catch(e){ console.warn('duration fix failed, using original blob', e); finalBlob = buggyBlob; }
+      }
+      const pseudoFile = new File([finalBlob], 'تسجيل-مباشر.webm', {type: finalBlob.type || rawType});
+      handleFile(pseudoFile);
       tabUpload.click();
     };
     mediaRecorder.start();
+    recStartTimestamp = Date.now();
     recording = true;
     recBtn.classList.add('recording');
-    recBtn.textContent = 'إيقاف التسجيل';
+    recBtn.textContent = t('إيقاف التسجيل','Stop Recording');
     recBtn.style.setProperty('--before','⏹');
     recSeconds = 0;
     recTime.textContent = '00:00';
@@ -425,7 +563,7 @@ recBtn.addEventListener('click', async ()=>{
     clearInterval(recTimerInterval);
     stopLevelMeter();
     recBtn.classList.remove('recording');
-    recBtn.textContent = 'ابدأ التسجيل';
+    recBtn.textContent = t('ابدأ التسجيل','Start Recording');
   }
 });
 
@@ -604,7 +742,7 @@ function pointerX(e){ return e.touches ? e.touches[0].clientX : e.clientX; }
 function stopPreview(){
   if(previewSource){ try{ previewSource.stop(); }catch(e){} try{ previewSource.disconnect(); }catch(e){} previewSource=null; }
   isPreviewPlaying = false;
-  document.getElementById('playSelBtn').textContent = '▶ تشغيل التحديد';
+  document.getElementById('playSelBtn').textContent = t('▶ تشغيل التحديد','▶ Play Selection');
   if(previewRAF) cancelAnimationFrame(previewRAF);
   playheadSec = null;
   redrawEdit();
@@ -648,7 +786,7 @@ document.getElementById('playSelBtn').addEventListener('click', ()=>{
   previewSource.onended = ()=>{ if(isPreviewPlaying) stopPreview(); };
   previewSource.start(0, previewSelStart, previewSelDur);
   isPreviewPlaying = true;
-  document.getElementById('playSelBtn').textContent = '⏸ إيقاف الاستماع';
+  document.getElementById('playSelBtn').textContent = t('⏸ إيقاف الاستماع','⏸ Stop Listening');
   animatePlayhead();
 });
 
@@ -689,7 +827,7 @@ async function handleFile(file){
   resultPanel.style.display='none';
   editPanel.style.display='none';
   processBtn.disabled = true;
-  processBtn.textContent = 'جارٍ فتح الملف...';
+  processBtn.textContent = t('جارٍ فتح الملف...','Opening file...');
   try{
     originalDecodedBuffer = await decodeToBuffer(file);
     editBuffer = cloneAudioBuffer(originalDecodedBuffer, getCtx());
@@ -703,7 +841,7 @@ async function handleFile(file){
     console.error(err);
     alert('تعذّر فتح هذا الملف للمعاينة. جرّب ملف mp3 مباشرة، أو تأكد أن ملف mp4 يحتوي مساراً صوتياً مدعوماً.');
   }finally{
-    processBtn.textContent = 'ابدأ التحسين';
+    processBtn.textContent = t('ابدأ التحسين','Start Enhancing');
   }
 }
 
@@ -1265,12 +1403,12 @@ const modeDesc = document.getElementById('modeDesc');
 modeNaturalBtn.addEventListener('click', ()=>{
   voiceMode = 'natural';
   modeNaturalBtn.classList.add('active'); modeDocBtn.classList.remove('active');
-  modeDesc.textContent = 'صوت واضح ومتوازن، أقرب لصوتك الطبيعي لكن أنظف وأثبت.';
+  modeDesc.textContent = t('صوت واضح ومتوازن، أقرب لصوتك الطبيعي لكن أنظف وأثبت.','Clear, balanced sound — close to your natural voice, just cleaner and steadier.');
 });
 modeDocBtn.addEventListener('click', ()=>{
   voiceMode = 'documentary';
   modeDocBtn.classList.add('active'); modeNaturalBtn.classList.remove('active');
-  modeDesc.textContent = 'دفء وعمق أكبر في الصوت، حدة أقل، وثبات ناعم — أقرب لصوت الراوي في الأفلام الوثائقية.';
+  modeDesc.textContent = t('دفء وعمق أكبر في الصوت، حدة أقل، وثبات ناعم — أقرب لصوت الراوي في الأفلام الوثائقية.','Deeper warmth, less harshness, smoother steadiness — closer to a documentary narrator\'s voice.');
 });
 
 let beforeUrl = null, afterUrl = null;
@@ -1290,7 +1428,7 @@ btnAfter.addEventListener('click', ()=>{
 processBtn.addEventListener('click', async ()=>{
   if(!currentFile) return;
   processBtn.disabled = true;
-  processBtn.textContent = 'جارٍ المعالجة...';
+  processBtn.textContent = t('جارٍ المعالجة...','Processing...');
   stagesEl.style.display = 'block';
   resultPanel.style.display = 'none';
   [1,2,3,4,5,6].forEach(n=>setStage(n,null));
@@ -1344,7 +1482,7 @@ processBtn.addEventListener('click', async ()=>{
     alert('تعذّر معالجة هذا الملف. جرّب ملف mp3 مباشرة، أو تأكد أن ملف mp4 يحتوي مساراً صوتياً مدعوماً من المتصفح.\n\nتفاصيل: '+err.message);
   }finally{
     processBtn.disabled = false;
-    processBtn.textContent = 'ابدأ التحسين';
+    processBtn.textContent = t('ابدأ التحسين','Start Enhancing');
   }
 });
 </script>
