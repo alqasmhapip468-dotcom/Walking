@@ -293,11 +293,31 @@
   }
   .feature-grid p{ font-size:13px; color:var(--cream-dim); line-height:1.7; }
 
+  .section-label{
+    font-family:'Cairo'; font-weight:700; font-size:13.5px; color:var(--brass);
+    margin-bottom:9px; margin-top:4px;
+  }
+  .mode-toggle{ display:flex; gap:8px; margin-bottom:12px; }
+  .mode-toggle-4{ display:grid; grid-template-columns:1fr 1fr; gap:8px; }
   .mode-btn{
     flex:1; background:#0f0d0a; border:1px solid var(--line); color:var(--cream-dim);
     font-family:'Cairo'; font-weight:700; font-size:14px; padding:12px 6px; border-radius:10px; cursor:pointer;
   }
   .mode-btn.active{ background: var(--brass); color:#1c1712; border-color: var(--brass); }
+
+  .noise-mode-toggle{ display:flex; gap:8px; margin-bottom:10px; }
+  .noise-mode-btn{
+    flex:1; background:#0f0d0a; border:1px solid var(--line); color:var(--cream-dim);
+    font-family:'Cairo'; font-weight:700; font-size:13px; padding:11px 6px; border-radius:10px; cursor:pointer;
+  }
+  .noise-mode-btn.active{ background: var(--teal); color:#0f1a18; border-color: var(--teal); }
+  .noise-manual-panel{ margin-bottom:14px; }
+  .intensity-row{ display:grid; grid-template-columns:repeat(4,1fr); gap:8px; margin-top:8px; }
+  .intensity-btn{
+    background:#0f0d0a; border:1px solid var(--line); color:var(--cream-dim);
+    font-family:'Cairo'; font-weight:700; font-size:14px; padding:11px 4px; border-radius:9px; cursor:pointer;
+  }
+  .intensity-btn.active{ background: var(--brass); color:#1c1712; border-color: var(--brass); }
 
     display:flex; justify-content:space-between; align-items:center;
     font-family:'Cairo'; font-weight:700; font-size:15px; margin-bottom:12px;
@@ -374,7 +394,7 @@
   gtag('js', new Date());  
   
   gtag('config', 'G-9X1B2PFWXD');  
-    </script>
+  </script>
 </head>
 <body>
 <div class="wrap">
@@ -574,19 +594,38 @@
   </div>
 
   <div class="panel">
-    <div class="mode-toggle">
-      <button class="mode-btn active" id="modeNatural" data-ar="🎙️ صوت طبيعي محسّن" data-en="🎙️ Natural Enhanced">🎙️ صوت طبيعي محسّن</button>
-      <button class="mode-btn" id="modeDoc" data-ar="🎬 وضع وثائقي" data-en="🎬 Documentary Mode">🎬 وضع وثائقي</button>
+    <div class="section-label" data-ar="🎛️ أسلوب الصوت" data-en="🎛️ Voice Style">🎛️ أسلوب الصوت</div>
+    <div class="mode-toggle mode-toggle-4">
+      <button class="mode-btn active" id="modeNatural" data-ar="🎙️ طبيعي" data-en="🎙️ Natural">🎙️ طبيعي</button>
+      <button class="mode-btn" id="modeDoc" data-ar="🎬 وثائقي" data-en="🎬 Documentary">🎬 وثائقي</button>
+      <button class="mode-btn" id="modePodcast" data-ar="🎧 بودكاست" data-en="🎧 Podcast">🎧 بودكاست</button>
+      <button class="mode-btn" id="modeStudio" data-ar="💽 استوديو" data-en="💽 Studio">💽 استوديو</button>
     </div>
     <div class="rec-tip" id="modeDesc" data-ar="صوت واضح ومتوازن، أقرب لصوتك الطبيعي لكن أنظف وأثبت." data-en="Clear, balanced sound — close to your natural voice, just cleaner and steadier.">صوت واضح ومتوازن، أقرب لصوتك الطبيعي لكن أنظف وأثبت.</div>
 
+    <div class="section-label" data-ar="🧹 إزالة الضجيج" data-en="🧹 Noise Removal">🧹 إزالة الضجيج</div>
+    <div class="noise-mode-toggle">
+      <button class="noise-mode-btn active" id="noiseAutoBtn" data-ar="🤖 تلقائي (للمبتدئين)" data-en="🤖 Automatic (Beginner)">🤖 تلقائي (للمبتدئين)</button>
+      <button class="noise-mode-btn" id="noiseManualBtn" data-ar="🛠️ يدوي (للمحترفين)" data-en="🛠️ Manual (Pro)">🛠️ يدوي (للمحترفين)</button>
+    </div>
+    <div class="noise-manual-panel" id="noiseManualPanel" style="display:none;">
+      <div class="rec-tip" data-ar="اختر شدة إزالة الضجيج حسب مقدار الضوضاء في تسجيلك:" data-en="Choose the noise-reduction strength based on how noisy your recording is:">اختر شدة إزالة الضجيج حسب مقدار الضوضاء في تسجيلك:</div>
+      <div class="intensity-row">
+        <button class="intensity-btn" data-v="15">15%</button>
+        <button class="intensity-btn active" data-v="50">50%</button>
+        <button class="intensity-btn" data-v="75">75%</button>
+        <button class="intensity-btn" data-v="100">100%</button>
+      </div>
+    </div>
+
     <div class="stages" id="stages">
       <div class="stage" data-s="1"><div class="dot"></div><div data-ar="فك التشفير وقصّ الصمت الزائد من البداية والنهاية" data-en="Decoding and trimming excess silence from start/end">فك التشفير وقصّ الصمت الزائد من البداية والنهاية</div></div>
-      <div class="stage" data-s="2"><div class="dot"></div><div data-ar="إزالة الضوضاء طيفياً وتخفيف صوت التنفس بين الجمل" data-en="Spectral noise removal and softening breath sounds">إزالة الضوضاء طيفياً وتخفيف صوت التنفس بين الجمل</div></div>
-      <div class="stage" data-s="3"><div class="dot"></div><div data-ar="تحليل نبرة صوتك وضبط الترددات تلقائياً (EQ تكيّفي)" data-en="Analyzing your tone and auto-tuning frequencies (adaptive EQ)">تحليل نبرة صوتك وضبط الترددات تلقائياً (EQ تكيّفي)</div></div>
-      <div class="stage" data-s="4"><div class="dot"></div><div data-ar="ضغط الديناميكية لثبات المستوى (Compressor)" data-en="Dynamics compression for level stability">ضغط الديناميكية لثبات المستوى (Compressor)</div></div>
-      <div class="stage" data-s="5"><div class="dot"></div><div data-ar="رفع مستوى الصوت وتثبيته (Loudness Normalize)" data-en="Raising and stabilizing loudness (normalize)">رفع مستوى الصوت وتثبيته (Loudness Normalize)</div></div>
-      <div class="stage" data-s="6"><div class="dot"></div><div data-ar="حد أقصى آمن ضد التشويه وتصدير WAV/MP3 (Limiter)" data-en="Safe limiter against distortion and WAV/MP3 export">حد أقصى آمن ضد التشويه وتصدير WAV/MP3 (Limiter)</div></div>
+      <div class="stage" data-s="2"><div class="dot"></div><div data-ar="كشف ومعالجة الأصوات المفاجئة (طرقعات، إغلاق أبواب)" data-en="Detecting and taming sudden loud sounds (bangs, door slams)">كشف ومعالجة الأصوات المفاجئة (طرقعات، إغلاق أبواب)</div></div>
+      <div class="stage" data-s="3"><div class="dot"></div><div data-ar="إزالة الضوضاء المستمرة (مروحة، هسهسة) وتخفيف التنفس" data-en="Removing steady noise (fan, hiss) and softening breath sounds">إزالة الضوضاء المستمرة (مروحة، هسهسة) وتخفيف التنفس</div></div>
+      <div class="stage" data-s="4"><div class="dot"></div><div data-ar="تحليل نبرة صوتك وضبط الترددات تلقائياً (EQ تكيّفي)" data-en="Analyzing your tone and auto-tuning frequencies (adaptive EQ)">تحليل نبرة صوتك وضبط الترددات تلقائياً (EQ تكيّفي)</div></div>
+      <div class="stage" data-s="5"><div class="dot"></div><div data-ar="ضغط الديناميكية لثبات المستوى (Compressor)" data-en="Dynamics compression for level stability">ضغط الديناميكية لثبات المستوى (Compressor)</div></div>
+      <div class="stage" data-s="6"><div class="dot"></div><div data-ar="رفع مستوى الصوت وتثبيته (Loudness Normalize)" data-en="Raising and stabilizing loudness (normalize)">رفع مستوى الصوت وتثبيته (Loudness Normalize)</div></div>
+      <div class="stage" data-s="7"><div class="dot"></div><div data-ar="حد أقصى آمن ضد التشويه وتصدير WAV/MP3 (Limiter)" data-en="Safe limiter against distortion and WAV/MP3 export">حد أقصى آمن ضد التشويه وتصدير WAV/MP3 (Limiter)</div></div>
     </div>
 
     <button class="primary" id="processBtn" disabled data-ar="ابدأ التحسين" data-en="Start Enhancing">ابدأ التحسين</button>
@@ -665,6 +704,10 @@ document.getElementById('langToggle').addEventListener('click', ()=>{
   currentLang = currentLang==='ar' ? 'en' : 'ar';
   applyLanguage();
   updateRatingDisplay(lastRatingStats);
+  if(typeof MODE_DESCRIPTIONS !== 'undefined' && MODE_DESCRIPTIONS[voiceMode]){
+    const [ar,en] = MODE_DESCRIPTIONS[voiceMode];
+    document.getElementById('modeDesc').textContent = t(ar,en);
+  }
 });
 
 let hasRated = false;
@@ -1210,7 +1253,7 @@ function ifft(re, im){
 // quietest parts of the recording, then subtracts it frequency-by-frequency
 // across the whole track. Also softens breath bursts (low-centroid, mid-energy
 // frames between words) without hard-muting anything, so nothing gets chopped.
-function spectralDenoise(buffer){
+function spectralDenoise(buffer, overSubParam, floorRatioParam){
   const frameSize = 2048;
   const hop = 512;
   const window = new Float32Array(frameSize);
@@ -1255,8 +1298,8 @@ function spectralDenoise(buffer){
     // Pass C: spectral subtraction + breath softening + overlap-add reconstruction
     const output = new Float32Array(input.length);
     const winSumSq = new Float32Array(input.length);
-    const overSub = 1.45;    // how aggressively to subtract the noise print (gentler = more natural, less metallic)
-    const floorRatio = 0.11; // spectral floor — higher = fewer robotic/musical-noise artifacts
+    const overSub = overSubParam != null ? overSubParam : 1.45;      // how aggressively to subtract the noise print
+    const floorRatio = floorRatioParam != null ? floorRatioParam : 0.11; // spectral floor — higher = fewer robotic/musical-noise artifacts
     const magArr = new Float32Array(frameSize), phaseArr = new Float32Array(frameSize);
 
     for(let f=0; f<numFrames; f++){
@@ -1304,6 +1347,74 @@ function spectralDenoise(buffer){
 // Measures how bass-heavy vs. how bright the recording is, so the EQ stage
 // below can adapt its settings to this specific voice/mic instead of using
 // one fixed preset for everyone.
+// Detects sudden loud transient events (a door slam, a bump on the desk, a
+// clunk) that are much louder than the surrounding speech, and brings just
+// those short bursts back down — without touching normal loud talking.
+// Steady background noise (like a fan) is handled separately by spectralDenoise.
+function detectAndSuppressTransients(buffer){
+  const sr = buffer.sampleRate;
+  const blockMs = 12;
+  const blockSize = Math.max(1, Math.floor(sr*blockMs/1000));
+  const numCh = buffer.numberOfChannels;
+  const channels = [];
+  for(let c=0;c<numCh;c++) channels.push(buffer.getChannelData(c));
+  const n = buffer.length;
+  const numBlocks = Math.max(1, Math.ceil(n/blockSize));
+
+  const blockRms = new Float32Array(numBlocks);
+  for(let b=0;b<numBlocks;b++){
+    const start = b*blockSize, end = Math.min(n, start+blockSize);
+    let sum=0, cnt=0;
+    for(let c=0;c<numCh;c++){
+      const d = channels[c];
+      for(let i=start;i<end;i++){ sum += d[i]*d[i]; cnt++; }
+    }
+    blockRms[b] = Math.sqrt(sum/Math.max(1,cnt));
+  }
+
+  // Robust local baseline (60th percentile of nearby blocks) — resistant to
+  // being skewed by the one spike we're trying to detect.
+  const neighborRadius = Math.max(3, Math.round(300/blockMs));
+  const baseline = new Float32Array(numBlocks);
+  const tmp = [];
+  for(let b=0;b<numBlocks;b++){
+    tmp.length = 0;
+    const lo = Math.max(0, b-neighborRadius), hi = Math.min(numBlocks-1, b+neighborRadius);
+    for(let k=lo;k<=hi;k++) if(k!==b) tmp.push(blockRms[k]);
+    tmp.sort((a,b2)=>a-b2);
+    baseline[b] = tmp.length ? tmp[Math.floor(tmp.length*0.6)] : blockRms[b];
+  }
+
+  const spikeRatio = 3.2;
+  const minAbsFloor = 0.01; // don't trigger on quiet room-tone fluctuations
+  const blockGain = new Float32Array(numBlocks);
+  for(let b=0;b<numBlocks;b++){
+    const base = Math.max(baseline[b], minAbsFloor);
+    if(blockRms[b] > base*spikeRatio){
+      const targetPeak = base*spikeRatio*0.85; // tame it, don't fully mute (keeps it natural)
+      blockGain[b] = Math.min(1, targetPeak/Math.max(blockRms[b], 1e-9));
+    } else {
+      blockGain[b] = 1;
+    }
+  }
+
+  // Smooth per-sample gain via linear interpolation between block centers
+  const gain = new Float32Array(n);
+  for(let i=0;i<n;i++){
+    const pos = i/blockSize - 0.5;
+    let b0 = Math.floor(pos), b1 = b0+1;
+    const frac = pos-b0;
+    b0 = Math.max(0, Math.min(numBlocks-1, b0));
+    b1 = Math.max(0, Math.min(numBlocks-1, b1));
+    gain[i] = blockGain[b0]*(1-frac) + blockGain[b1]*frac;
+  }
+  for(let c=0;c<numCh;c++){
+    const d = channels[c];
+    for(let i=0;i<n;i++) d[i] *= gain[i];
+  }
+  return buffer;
+}
+
 function analyzeTonalBalance(buffer){
   const data = buffer.getChannelData(0);
   const sr = buffer.sampleRate;
@@ -1392,6 +1503,30 @@ function getModeParams(mode){
       levelerThreshold: -24, levelerRatio: 2.7, levelerAttack: 0.02, levelerRelease: 0.45, levelerKnee: 26,
       compThreshold: -25, compRatio: 2.8, compAttack: 0.008, compRelease: 0.4, knee: 24,
       makeup: 1.55, saturation: 2.1
+    };
+  }
+  if(mode === 'podcast'){
+    return {
+      depthFreq: 130, depthDb: 1.2,
+      lowShelfFreq: 190, lowShelfDb: 1.3,
+      presenceFreq: 3400, presenceQ: 0.95, presenceAdjust: 1,   // extra clarity for spoken conversation
+      deEssAdjust: -0.3,                                        // USB mics are often sibilant
+      airShelfFreq: 11000, airShelfDb: 0.5,                     // slight brightness
+      levelerThreshold: -20, levelerRatio: 3.0, levelerAttack: 0.012, levelerRelease: 0.3, levelerKnee: 20,
+      compThreshold: -27, compRatio: 3.5, compAttack: 0.005, compRelease: 0.2, knee: 18,
+      makeup: 1.6, saturation: 0.4
+    };
+  }
+  if(mode === 'studio'){
+    return {
+      depthFreq: 120, depthDb: 0.6,
+      lowShelfFreq: 200, lowShelfDb: 0.5,
+      presenceFreq: 3000, presenceQ: 1.0, presenceAdjust: -0.5, // neutral, not hyped
+      deEssAdjust: 0.5,                                         // preserve natural detail
+      airShelfFreq: 12000, airShelfDb: 0,                       // full extension, no coloration
+      levelerThreshold: -23, levelerRatio: 2.0, levelerAttack: 0.02, levelerRelease: 0.4, levelerKnee: 26,
+      compThreshold: -28, compRatio: 2.5, compAttack: 0.006, compRelease: 0.3, knee: 20,
+      makeup: 1.45, saturation: 0.1
     };
   }
   return {
@@ -1654,19 +1789,60 @@ function bufferToWav(buffer){
 }
 
 let voiceMode = 'natural';
-const modeNaturalBtn = document.getElementById('modeNatural');
-const modeDocBtn = document.getElementById('modeDoc');
 const modeDesc = document.getElementById('modeDesc');
-modeNaturalBtn.addEventListener('click', ()=>{
-  voiceMode = 'natural';
-  modeNaturalBtn.classList.add('active'); modeDocBtn.classList.remove('active');
-  modeDesc.textContent = t('صوت واضح ومتوازن، أقرب لصوتك الطبيعي لكن أنظف وأثبت.','Clear, balanced sound — close to your natural voice, just cleaner and steadier.');
+const MODE_DESCRIPTIONS = {
+  natural: ['صوت واضح ومتوازن، أقرب لصوتك الطبيعي لكن أنظف وأثبت.', 'Clear, balanced sound — close to your natural voice, just cleaner and steadier.'],
+  documentary: ['دفء وعمق أكبر في الصوت، حدة أقل، وثبات ناعم — أقرب لصوت الراوي في الأفلام الوثائقية.', "Deeper warmth, less harshness, smoother steadiness — closer to a documentary narrator's voice."],
+  podcast: ['وضوح وحضور قوي مع ثبات صارم في المستوى — مثالي لحلقات البودكاست الطويلة والمحادثات.', 'Strong clarity and presence with tight level consistency — ideal for long podcast episodes and conversations.'],
+  studio: ['صوت نظيف وشفاف بأقل تلوين ممكن — أقرب لصوت مسجَّل بمعدات استوديو احترافية.', 'Clean, transparent sound with minimal coloration — closer to audio captured on professional studio gear.']
+};
+const modeButtons = {
+  natural: document.getElementById('modeNatural'),
+  documentary: document.getElementById('modeDoc'),
+  podcast: document.getElementById('modePodcast'),
+  studio: document.getElementById('modeStudio')
+};
+Object.keys(modeButtons).forEach(key=>{
+  modeButtons[key].addEventListener('click', ()=>{
+    voiceMode = key;
+    Object.values(modeButtons).forEach(b=>b.classList.remove('active'));
+    modeButtons[key].classList.add('active');
+    const [ar,en] = MODE_DESCRIPTIONS[key];
+    modeDesc.textContent = t(ar,en);
+  });
 });
-modeDocBtn.addEventListener('click', ()=>{
-  voiceMode = 'documentary';
-  modeDocBtn.classList.add('active'); modeNaturalBtn.classList.remove('active');
-  modeDesc.textContent = t('دفء وعمق أكبر في الصوت، حدة أقل، وثبات ناعم — أقرب لصوت الراوي في الأفلام الوثائقية.','Deeper warmth, less harshness, smoother steadiness — closer to a documentary narrator\'s voice.');
+
+let noiseReductionMode = 'auto'; // 'auto' | 'manual'
+let noiseReductionIntensity = 50; // 15 | 50 | 75 | 100 (only used in manual mode)
+const noiseAutoBtn = document.getElementById('noiseAutoBtn');
+const noiseManualBtn = document.getElementById('noiseManualBtn');
+const noiseManualPanel = document.getElementById('noiseManualPanel');
+noiseAutoBtn.addEventListener('click', ()=>{
+  noiseReductionMode = 'auto';
+  noiseAutoBtn.classList.add('active'); noiseManualBtn.classList.remove('active');
+  noiseManualPanel.style.display = 'none';
 });
+noiseManualBtn.addEventListener('click', ()=>{
+  noiseReductionMode = 'manual';
+  noiseManualBtn.classList.add('active'); noiseAutoBtn.classList.remove('active');
+  noiseManualPanel.style.display = 'block';
+});
+document.querySelectorAll('.intensity-btn').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    noiseReductionIntensity = parseInt(btn.getAttribute('data-v'), 10);
+    document.querySelectorAll('.intensity-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+  });
+});
+// Maps a 0-100% "how noisy is my recording" choice to spectral-subtraction
+// parameters: higher % subtracts more aggressively (stronger cleanup, slightly
+// more risk of artifacts); lower % is gentler and more natural-sounding.
+function noiseParamsFromPercent(p){
+  const amt = Math.max(0, Math.min(100, p))/100;
+  const overSub = 0.5 + amt*2.2;
+  const floorRatio = 0.20 - amt*0.16;
+  return { overSub, floorRatio };
+}
 
 let beforeUrl = null, afterUrl = null;
 const playerEl = document.getElementById('player');
@@ -1688,7 +1864,7 @@ processBtn.addEventListener('click', async ()=>{
   processBtn.textContent = t('جارٍ المعالجة...','Processing...');
   stagesEl.style.display = 'block';
   resultPanel.style.display = 'none';
-  [1,2,3,4,5,6].forEach(n=>setStage(n,null));
+  [1,2,3,4,5,6,7].forEach(n=>setStage(n,null));
 
   try{
     setStage(1,'active');
@@ -1696,25 +1872,32 @@ processBtn.addEventListener('click', async ()=>{
     const audioBuffer = cloneAudioBuffer(editBuffer, ctx); // start from the user-edited (cut) version
     const trimmed = trimSilence(audioBuffer, ctx);
     const original = cloneAudioBuffer(trimmed, ctx); // untouched copy for "before"
-    await wait(200);
+    await wait(180);
     setStage(1,'done'); setStage(2,'active');
 
-    spectralDenoise(trimmed);
+    detectAndSuppressTransients(trimmed);
     await wait(150);
     setStage(2,'done'); setStage(3,'active');
 
+    const noiseParams = noiseReductionMode==='manual'
+      ? noiseParamsFromPercent(noiseReductionIntensity)
+      : { overSub: 1.45, floorRatio: 0.11 }; // tuned automatic default
+    spectralDenoise(trimmed, noiseParams.overSub, noiseParams.floorRatio);
+    await wait(150);
+    setStage(3,'done'); setStage(4,'active');
+
     const tonal = analyzeTonalBalance(trimmed);
     let processed = await runEQAndCompression(trimmed, tonal, voiceMode);
-    setStage(3,'done'); setStage(4,'active');
-    await wait(150);
     setStage(4,'done'); setStage(5,'active');
+    await wait(150);
+    setStage(5,'done'); setStage(6,'active');
 
     processed = normalizeBuffer(processed, -16);
-    setStage(5,'done'); setStage(6,'active');
+    setStage(6,'done'); setStage(7,'active');
     await wait(150);
 
     processed = limiterBuffer(processed, -0.8);
-    setStage(6,'done');
+    setStage(7,'done');
 
     const wavBlob = bufferToWav(processed);
     afterUrl = URL.createObjectURL(wavBlob);
@@ -1748,4 +1931,3 @@ processBtn.addEventListener('click', async ()=>{
 </script>
 </body>
 </html>
-
