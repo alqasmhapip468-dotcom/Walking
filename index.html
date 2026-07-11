@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>صقل — تحسين جودة الصوت مجاناً بدون حدود | <meta name="description" content="Saql is a free AI-powered audio enhancer that reduces noise, improves voice clarity, and boosts sound quality directly in your browser with no uploads or subscriptions."></title>
+<title>صقل — تحسين جودة الصوت مجاناً بدون حدود | Saql: Free Audio Enhancer & Noise Remover</title>
 <meta name="description" content="صقل: أداة مجانية بالكامل لتحسين جودة الصوت وإزالة الضجيج من التسجيلات مباشرة من متصفحك، بدون تسجيل حساب وبدون أي حدود استخدام. Saql is a 100% free online audio enhancer — remove background noise, clean up voice recordings, and export MP3/WAV. No sign-up, no limits, fully private (runs entirely in your browser).">
 <meta name="keywords" content="تحسين جودة الصوت, إزالة الضجيج من التسجيل, تنظيف الصوت, أداة صوت مجانية, audio enhancer, voice cleaner, remove background noise online free, noise reduction online, mp3 wav converter">
 <meta name="robots" content="index, follow">
@@ -44,6 +44,39 @@
   "operatingSystem": "Any (Web Browser)",
   "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
   "inLanguage": ["ar", "en"]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "هل صقل مجاني فعلاً؟",
+      "acceptedAnswer": { "@type": "Answer", "text": "نعم، صقل مجاني بالكامل بدون أي رسوم مخفية أو اشتراك، وبدون أي حد لعدد الملفات أو مدتها." }
+    },
+    {
+      "@type": "Question",
+      "name": "هل يحفظ صقل ملفاتي أو يرفعها لأي سيرفر؟",
+      "acceptedAnswer": { "@type": "Answer", "text": "لا. كل المعالجة تتم داخل متصفحك مباشرة؛ ملفك الصوتي لا يُرسَل ولا يُخزَّن في أي مكان خارجي." }
+    },
+    {
+      "@type": "Question",
+      "name": "ما الصيغ المدعومة؟",
+      "acceptedAnswer": { "@type": "Answer", "text": "يدعم رفع MP3 وMP4، ويصدّر النتيجة النهائية بصيغة MP3 أو WAV." }
+    },
+    {
+      "@type": "Question",
+      "name": "هل أحتاج إنشاء حساب لاستخدامه؟",
+      "acceptedAnswer": { "@type": "Answer", "text": "لا حاجة لأي تسجيل دخول أو بريد إلكتروني — افتح الصفحة واستخدم الأداة مباشرة." }
+    },
+    {
+      "@type": "Question",
+      "name": "هل يناسب صقل تسجيلات اليوتيوبرز والبودكاست؟",
+      "acceptedAnswer": { "@type": "Answer", "text": "نعم، صُمم خصيصاً لصنّاع المحتوى الذين يسجّلون بمعدات بسيطة كالهاتف ويريدون صوتاً أقرب لجودة الاستوديو." }
+    }
+  ]
 }
 </script>
 <style>
@@ -186,7 +219,63 @@
     display:flex; flex-wrap:wrap; justify-content:center; gap:8px 14px;
     margin-top:16px; font-size:12.5px; color:var(--teal);
   }
-  .seo-intro{ margin-bottom:24px; }
+  .rating-badge{
+    margin-top:12px; display:inline-flex; gap:6px; font-size:13px; color:var(--brass);
+    background:rgba(201,161,90,0.1); border:1px solid var(--brass-dim); border-radius:20px;
+    padding:6px 14px;
+  }
+  .rating-agg{
+    text-align:center; font-size:13.5px; color:var(--cream-dim); margin-bottom:14px;
+  }
+  .rating-agg b{ color:var(--brass); }
+  .rating-title{
+    font-family:'Cairo'; font-weight:700; font-size:15px; text-align:center; margin-bottom:12px;
+  }
+  .stars{ display:flex; justify-content:center; gap:8px; }
+  .star-btn{
+    background:none; border:none; font-size:32px; color:var(--brass-dim); cursor:pointer; line-height:1;
+    transition: transform .1s;
+  }
+  .star-btn:hover{ transform: scale(1.15); }
+  .star-btn.filled{ color: var(--brass); }
+  .rating-thanks{
+    text-align:center; font-family:'Cairo'; font-weight:700; color:var(--teal); font-size:15px;
+  }
+
+  .seo-section{ margin-bottom:26px; }
+  .seo-section h2{
+    font-family:'Cairo'; font-weight:700; font-size:19px; color:var(--cream);
+    margin-bottom:14px; text-align:center;
+  }
+  .steps-list{ list-style:none; display:flex; flex-direction:column; gap:10px; max-width:520px; margin:0 auto; }
+  .steps-list li{
+    display:flex; align-items:center; gap:12px; background:var(--bg-panel);
+    border:1px solid var(--line); border-radius:10px; padding:12px 14px;
+    font-size:14px; color:var(--cream-dim);
+  }
+  .step-num{
+    flex-shrink:0; width:26px; height:26px; border-radius:50%; background:var(--brass);
+    color:#1c1712; font-family:'Cairo'; font-weight:700; font-size:13px;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .why-list{ list-style:none; max-width:520px; margin:0 auto; display:flex; flex-direction:column; gap:9px; }
+  .why-list li{
+    background:var(--bg-panel); border:1px solid var(--line); border-radius:10px;
+    padding:11px 14px; font-size:14px; color:var(--cream-dim);
+  }
+  .faq-item{
+    background:var(--bg-panel); border:1px solid var(--line); border-radius:10px;
+    padding:12px 14px; margin-bottom:8px; max-width:640px; margin-inline:auto; margin-bottom:8px;
+  }
+  .faq-item summary{
+    font-family:'Cairo'; font-weight:600; font-size:14.5px; color:var(--brass);
+    cursor:pointer; list-style:none;
+  }
+  .faq-item summary::-webkit-details-marker{ display:none; }
+  .faq-item summary::before{ content:'▸ '; }
+  .faq-item[open] summary::before{ content:'▾ '; }
+  .faq-item p{ color:var(--cream-dim); font-size:13.5px; line-height:1.8; margin-top:8px; }
+
   .seo-intro h2{
     font-family:'Cairo'; font-weight:700; font-size:20px; color:var(--cream);
     margin-bottom:10px; text-align:center;
@@ -304,6 +393,7 @@
       <span data-ar="✔ بدون حدود استخدام" data-en="✔ No usage limits">✔ بدون حدود استخدام</span>
       <span data-ar="✔ خصوصية كاملة (client-side)" data-en="✔ 100% private (client-side)">✔ خصوصية كاملة (client-side)</span>
     </div>
+    <div class="rating-badge" id="ratingBadge" style="display:none;"></div>
   </header>
 
   <div class="mark">
@@ -318,7 +408,7 @@
 
   <section class="seo-intro">
     <h2 data-ar="ماذا يفعل صقل؟" data-en="What does Saql do?">ماذا يفعل صقل؟</h2>
-    <p data-ar="صقل يحوّل تسجيل الصوت الخام (من الهاتف أو أي مايك عادي) إلى صوت أنظف وأوضح: يزيل الضجيج والهسهسة الخلفية، يوازن الترددات، يثبّت مستوى الصوت، ويصدّر النتيجة كملف MP3 أو WAV — كل ذلك دون رفع ملفك لأي سيرفر خارجي." data-en="Saql turns a raw recording (from your phone or any basic mic) into clean, clear audio: it removes background noise and hiss, balances frequencies, stabilizes volume, and exports the result as MP3 or WAV — all without ever uploading your file to a server.">صقل يحوّل تسجيل الصوت الخام (من الهاتف أو أي مايك عادي) إلى صوت أنظف وأوضح: يزيل الضجيج والهسهسة الخلفية، يوازن الترددات، يثبّت مستوى الصوت، ويصدّر النتيجة كملف MP3 أو WAV — كل ذلك دون رفع ملفك لأي سيرفر خارجي.</p>
+    <p data-ar="صقل أداة مجانية لتحسين جودة الصوت، مصمّمة خصيصاً لصنّاع المحتوى: يوتيوبرز، بودكاسترز، معلّقون صوتيون، وأي شخص يسجّل بمايك هاتف عادي بدل استوديو احترافي. يأخذ صقل تسجيلك الخام ويزيل الضجيج والهسهسة الخلفية، ينظّف صوت التنفس بين الجمل، يوازن الترددات حسب نبرة صوتك تحديداً، ويثبّت مستوى الصوت بحيث لا تكون بعض الكلمات مرتفعة جداً وأخرى منخفضة. النتيجة صوت أوضح وأقرب لمستوى الاستوديو، جاهز للرفع مباشرة على يوتيوب أو منصات البودكاست. لماذا تختاره تحديداً؟ لأنه مجاني بالكامل وبدون أي حدود على عدد الملفات أو مدة الصوت، لا يطلب تسجيل حساب أو بريد إلكتروني، وكل المعالجة تتم داخل متصفحك مباشرة — ملفك لا يُرفع لأي سيرفر خارجي، ما يعني خصوصية تامة وسرعة معالجة فورية." data-en="Saql is a free audio-enhancement tool built for content creators: YouTubers, podcasters, voice-over narrators, and anyone recording with a regular phone mic instead of a studio setup. It takes your raw recording and removes background noise and hiss, softens breath sounds between sentences, balances frequencies based on your specific voice tone, and stabilizes the volume so no word is too loud or too quiet. The result is clearer, studio-closer audio ready to upload straight to YouTube or podcast platforms. Why choose it? It's completely free with no limits on file count or audio length, requires no account or email sign-up, and all processing happens right in your browser — your file is never uploaded to any server, meaning full privacy and instant processing.">صقل أداة مجانية لتحسين جودة الصوت، مصمّمة خصيصاً لصنّاع المحتوى: يوتيوبرز، بودكاسترز، معلّقون صوتيون، وأي شخص يسجّل بمايك هاتف عادي بدل استوديو احترافي. يأخذ صقل تسجيلك الخام ويزيل الضجيج والهسهسة الخلفية، ينظّف صوت التنفس بين الجمل، يوازن الترددات حسب نبرة صوتك تحديداً، ويثبّت مستوى الصوت بحيث لا تكون بعض الكلمات مرتفعة جداً وأخرى منخفضة. النتيجة صوت أوضح وأقرب لمستوى الاستوديو، جاهز للرفع مباشرة على يوتيوب أو منصات البودكاست. لماذا تختاره تحديداً؟ لأنه مجاني بالكامل وبدون أي حدود على عدد الملفات أو مدة الصوت، لا يطلب تسجيل حساب أو بريد إلكتروني، وكل المعالجة تتم داخل متصفحك مباشرة — ملفك لا يُرفع لأي سيرفر خارجي، ما يعني خصوصية تامة وسرعة معالجة فورية.</p>
     <div class="feature-grid">
       <div>
         <h3 data-ar="🧹 إزالة الضجيج" data-en="🧹 Noise Removal">🧹 إزالة الضجيج</h3>
@@ -337,6 +427,95 @@
         <p data-ar="كل المعالجة تتم داخل متصفحك؛ ملفك لا يُرسَل لأي خادم." data-en="All processing happens in your browser; your file is never sent to a server.">كل المعالجة تتم داخل متصفحك؛ ملفك لا يُرسَل لأي خادم.</p>
       </div>
     </div>
+  </section>
+
+  <section class="how-it-works">
+    <h2 data-ar="كيف يعمل صقل؟" data-en="How does Saql work?">كيف يعمل صقل؟</h2>
+    <ol>
+      <li><span class="step-num">1</span><div><h3 data-ar="ارفع ملفك أو سجّل مباشرة" data-en="Upload your file or record directly">ارفع ملفك أو سجّل مباشرة</h3><p data-ar="اختر ملف MP3/MP4 من جهازك، أو سجّل صوتك مباشرة من المتصفح بالمايكروفون." data-en="Choose an MP3/MP4 file from your device, or record directly in the browser using your microphone.">اختر ملف MP3/MP4 من جهازك، أو سجّل صوتك مباشرة من المتصفح بالمايكروفون.</p></div></li>
+      <li><span class="step-num">2</span><div><h3 data-ar="اختر وضع المعالجة" data-en="Choose a processing mode">اختر وضع المعالجة</h3><p data-ar="صوت طبيعي محسّن، أو وضع وثائقي بدفء أعمق — واختر أيضاً أي مقاطع تريد قصّها." data-en="Natural enhanced sound, or a documentary mode with deeper warmth — and trim out any unwanted sections.">صوت طبيعي محسّن، أو وضع وثائقي بدفء أعمق — واختر أيضاً أي مقاطع تريد قصّها.</p></div></li>
+      <li><span class="step-num">3</span><div><h3 data-ar="حمّل النتيجة" data-en="Download the result">حمّل النتيجة</h3><p data-ar="اضغط زر التحسين، قارن قبل/بعد، ثم حمّل الملف بصيغة WAV أو MP3 مباشرة." data-en="Tap enhance, compare before/after, then download the file as WAV or MP3 instantly.">اضغط زر التحسين، قارن قبل/بعد، ثم حمّل الملف بصيغة WAV أو MP3 مباشرة.</p></div></li>
+    </ol>
+  </section>
+
+  <section class="why-us">
+    <h2 data-ar="لماذا تختار صقل؟" data-en="Why choose Saql?">لماذا تختار صقل؟</h2>
+    <ul>
+      <li data-ar="✔ مجاني بالكامل، بدون أي رسوم مخفية" data-en="✔ Completely free, no hidden fees">✔ مجاني بالكامل، بدون أي رسوم مخفية</li>
+      <li data-ar="✔ بدون تسجيل حساب أو بريد إلكتروني" data-en="✔ No account or email sign-up needed">✔ بدون تسجيل حساب أو بريد إلكتروني</li>
+      <li data-ar="✔ بدون أي حدود على عدد الملفات أو مدة الصوت" data-en="✔ No limits on file count or audio length">✔ بدون أي حدود على عدد الملفات أو مدة الصوت</li>
+      <li data-ar="✔ يعمل بالكامل داخل متصفحك — خصوصية تامة" data-en="✔ Runs entirely in your browser — full privacy">✔ يعمل بالكامل داخل متصفحك — خصوصية تامة</li>
+      <li data-ar="✔ يدعم رفع MP3/MP4 وتصدير WAV/MP3" data-en="✔ Supports MP3/MP4 upload and WAV/MP3 export">✔ يدعم رفع MP3/MP4 وتصدير WAV/MP3</li>
+    </ul>
+  </section>
+
+  <section class="faq">
+    <h2 data-ar="أسئلة شائعة" data-en="Frequently Asked Questions">أسئلة شائعة</h2>
+    <div class="faq-item">
+      <h3 data-ar="هل صقل مجاني فعلاً؟" data-en="Is Saql really free?">هل صقل مجاني فعلاً؟</h3>
+      <p data-ar="نعم، الاستخدام مجاني بالكامل وبدون أي حدود على عدد الملفات أو مدة الصوت أو عدد مرات الاستخدام، ولا يوجد أي ميزة مقفلة خلف اشتراك." data-en="Yes, it's completely free to use with no limits on file count, audio length, or number of uses, and no feature is locked behind a subscription.">نعم، الاستخدام مجاني بالكامل وبدون أي حدود على عدد الملفات أو مدة الصوت أو عدد مرات الاستخدام، ولا يوجد أي ميزة مقفلة خلف اشتراك.</p>
+    </div>
+    <div class="faq-item">
+      <h3 data-ar="هل يحفظ الموقع ملفاتي أو يرفعها لأي سيرفر؟" data-en="Does the site save or upload my files to a server?">هل يحفظ الموقع ملفاتي أو يرفعها لأي سيرفر؟</h3>
+      <p data-ar="لا، جميع المعالجة تتم داخل متصفحك فقط باستخدام تقنية Web Audio API، وملفك لا يغادر جهازك إطلاقاً ولا يُخزَّن في أي مكان." data-en="No, all processing happens entirely in your browser using the Web Audio API, and your file never leaves your device or gets stored anywhere.">لا، جميع المعالجة تتم داخل متصفحك فقط باستخدام تقنية Web Audio API، وملفك لا يغادر جهازك إطلاقاً ولا يُخزَّن في أي مكان.</p>
+    </div>
+    <div class="faq-item">
+      <h3 data-ar="ما الصيغ المدعومة للرفع والتصدير؟" data-en="What formats are supported for upload and export?">ما الصيغ المدعومة للرفع والتصدير؟</h3>
+      <p data-ar="يمكنك رفع ملفات MP3 أو MP4 (سيُستخرج الصوت من الفيديو تلقائياً)، وتصدير النتيجة المحسّنة كملف WAV عالي الجودة أو MP3 أصغر حجماً." data-en="You can upload MP3 or MP4 files (audio is auto-extracted from video), and export the enhanced result as a high-quality WAV or a smaller MP3.">يمكنك رفع ملفات MP3 أو MP4 (سيُستخرج الصوت من الفيديو تلقائياً)، وتصدير النتيجة المحسّنة كملف WAV عالي الجودة أو MP3 أصغر حجماً.</p>
+    </div>
+    <div class="faq-item">
+      <h3 data-ar="هل أحتاج لإنشاء حساب لاستخدام صقل؟" data-en="Do I need to create an account to use Saql?">هل أحتاج لإنشاء حساب لاستخدام صقل؟</h3>
+      <p data-ar="لا، لا يوجد أي تسجيل دخول أو حساب مطلوب. افتح الموقع واستخدمه مباشرة." data-en="No, no sign-up or account is required. Just open the site and start using it right away.">لا، لا يوجد أي تسجيل دخول أو حساب مطلوب. افتح الموقع واستخدمه مباشرة.</p>
+    </div>
+    <div class="faq-item">
+      <h3 data-ar="هل يحتاج صقل اتصالاً بالإنترنت؟" data-en="Does Saql need an internet connection?">هل يحتاج صقل اتصالاً بالإنترنت؟</h3>
+      <p data-ar="يحتاج اتصالاً بالإنترنت فقط لتحميل الصفحة أول مرة، أما معالجة الصوت نفسها فتتم بالكامل محلياً داخل متصفحك." data-en="It only needs an internet connection to load the page initially — the actual audio processing happens entirely locally in your browser.">يحتاج اتصالاً بالإنترنت فقط لتحميل الصفحة أول مرة، أما معالجة الصوت نفسها فتتم بالكامل محلياً داخل متصفحك.</p>
+    </div>
+  </section>
+
+  <section class="seo-section">
+    <h2 data-ar="كيف يعمل صقل؟" data-en="How does Saql work?">كيف يعمل صقل؟</h2>
+    <ol class="steps-list">
+      <li><span class="step-num">1</span><span data-ar="سجّل بصوتك مباشرة أو ارفع ملفاً (MP3 أو MP4)" data-en="Record your voice directly, or upload a file (MP3 or MP4)">سجّل بصوتك مباشرة أو ارفع ملفاً (MP3 أو MP4)</span></li>
+      <li><span class="step-num">2</span><span data-ar="اقصص أي مقاطع غير مرغوبة، واختر وضع المعالجة (طبيعي أو وثائقي)" data-en="Trim any unwanted sections, and choose a processing mode (Natural or Documentary)">اقصص أي مقاطع غير مرغوبة، واختر وضع المعالجة (طبيعي أو وثائقي)</span></li>
+      <li><span class="step-num">3</span><span data-ar='اضغط "ابدأ التحسين" واستمع للمقارنة قبل/بعد' data-en='Tap "Start Enhancing" and listen to the before/after comparison'>اضغط "ابدأ التحسين" واستمع للمقارنة قبل/بعد</span></li>
+      <li><span class="step-num">4</span><span data-ar="حمّل النتيجة النهائية بصيغة MP3 أو WAV" data-en="Download the final result as MP3 or WAV">حمّل النتيجة النهائية بصيغة MP3 أو WAV</span></li>
+    </ol>
+  </section>
+
+  <section class="seo-section">
+    <h2 data-ar="لماذا صقل؟" data-en="Why Saql?">لماذا صقل؟</h2>
+    <ul class="why-list">
+      <li data-ar="✔ مجاني بالكامل، بدون أي رسوم مخفية" data-en="✔ Completely free, no hidden fees">✔ مجاني بالكامل، بدون أي رسوم مخفية</li>
+      <li data-ar="✔ بدون تسجيل حساب أو بريد إلكتروني" data-en="✔ No account or email sign-up needed">✔ بدون تسجيل حساب أو بريد إلكتروني</li>
+      <li data-ar="✔ بدون حدود لعدد الملفات أو مدة الصوت" data-en="✔ No limits on file count or audio length">✔ بدون حدود لعدد الملفات أو مدة الصوت</li>
+      <li data-ar="✔ يعمل بالكامل داخل متصفحك — خصوصية تامة، لا رفع لأي سيرفر" data-en="✔ Runs entirely in your browser — full privacy, nothing uploaded to a server">✔ يعمل بالكامل داخل متصفحك — خصوصية تامة، لا رفع لأي سيرفر</li>
+      <li data-ar="✔ يدعم صيغ متعددة: استيراد MP3/MP4 وتصدير MP3/WAV" data-en="✔ Supports multiple formats: import MP3/MP4, export MP3/WAV">✔ يدعم صيغ متعددة: استيراد MP3/MP4 وتصدير MP3/WAV</li>
+    </ul>
+  </section>
+
+  <section class="seo-section">
+    <h2 data-ar="أسئلة شائعة" data-en="Frequently Asked Questions">أسئلة شائعة</h2>
+    <details class="faq-item" open>
+      <summary data-ar="هل صقل مجاني فعلاً؟" data-en="Is Saql really free?">هل صقل مجاني فعلاً؟</summary>
+      <p data-ar="نعم، صقل مجاني بالكامل بدون أي رسوم مخفية أو اشتراك، وبدون أي حد لعدد الملفات أو مدتها." data-en="Yes, Saql is completely free with no hidden fees or subscription, and no limit on the number or length of files.">نعم، صقل مجاني بالكامل بدون أي رسوم مخفية أو اشتراك، وبدون أي حد لعدد الملفات أو مدتها.</p>
+    </details>
+    <details class="faq-item">
+      <summary data-ar="هل يحفظ صقل ملفاتي أو يرفعها لأي سيرفر؟" data-en="Does Saql store or upload my files to a server?">هل يحفظ صقل ملفاتي أو يرفعها لأي سيرفر؟</summary>
+      <p data-ar="لا. كل المعالجة تتم داخل متصفحك مباشرة؛ ملفك الصوتي لا يُرسَل ولا يُخزَّن في أي مكان خارجي." data-en="No. All processing happens directly in your browser; your audio file is never sent or stored anywhere externally.">لا. كل المعالجة تتم داخل متصفحك مباشرة؛ ملفك الصوتي لا يُرسَل ولا يُخزَّن في أي مكان خارجي.</p>
+    </details>
+    <details class="faq-item">
+      <summary data-ar="ما الصيغ المدعومة؟" data-en="What formats are supported?">ما الصيغ المدعومة؟</summary>
+      <p data-ar="يدعم رفع MP3 وMP4 (يُستخرج الصوت من الفيديو تلقائياً)، ويصدّر النتيجة النهائية بصيغة MP3 أو WAV." data-en="It supports uploading MP3 and MP4 (audio is auto-extracted from video), and exports the final result as MP3 or WAV.">يدعم رفع MP3 وMP4 (يُستخرج الصوت من الفيديو تلقائياً)، ويصدّر النتيجة النهائية بصيغة MP3 أو WAV.</p>
+    </details>
+    <details class="faq-item">
+      <summary data-ar="هل أحتاج إنشاء حساب لاستخدامه؟" data-en="Do I need to create an account to use it?">هل أحتاج إنشاء حساب لاستخدامه؟</summary>
+      <p data-ar="لا حاجة لأي تسجيل دخول أو بريد إلكتروني — افتح الصفحة واستخدم الأداة مباشرة." data-en="No sign-up or email required — just open the page and start using the tool right away.">لا حاجة لأي تسجيل دخول أو بريد إلكتروني — افتح الصفحة واستخدم الأداة مباشرة.</p>
+    </details>
+    <details class="faq-item">
+      <summary data-ar="هل يناسب صقل تسجيلات اليوتيوبرز والبودكاست؟" data-en="Is Saql suitable for YouTube and podcast recordings?">هل يناسب صقل تسجيلات اليوتيوبرز والبودكاست؟</summary>
+      <p data-ar="نعم، صُمم خصيصاً لصنّاع المحتوى الذين يسجّلون بمعدات بسيطة كالهاتف ويريدون صوتاً أقرب لجودة الاستوديو." data-en="Yes, it's built specifically for creators recording with basic gear like a phone who want studio-closer sound.">نعم، صُمم خصيصاً لصنّاع المحتوى الذين يسجّلون بمعدات بسيطة كالهاتف ويريدون صوتاً أقرب لجودة الاستوديو.</p>
+    </details>
   </section>
 
   <div class="tabs">
@@ -436,6 +615,24 @@
     <div class="note" data-ar="تم كل شيء داخل متصفحك — لم يُرسَل ملفك لأي خادم." data-en="Everything happened in your browser — your file was never sent to a server.">تم كل شيء داخل متصفحك — لم يُرسَل ملفك لأي خادم.</div>
   </div>
 
+  <div class="panel" id="ratingPanel" style="display:none;">
+    <div class="rating-agg" id="ratingAggRow" style="display:none;">
+      <span data-ar="تقييم المستخدمين:" data-en="User rating:">تقييم المستخدمين:</span>
+      <b id="ratingAggText"></b>
+    </div>
+    <div id="ratingAskBlock">
+      <div class="rating-title" data-ar="كيف كانت النتيجة؟ قيّم صقل" data-en="How was the result? Rate Saql">كيف كانت النتيجة؟ قيّم صقل</div>
+      <div class="stars" id="starsRow">
+        <button class="star-btn" data-v="1">☆</button>
+        <button class="star-btn" data-v="2">☆</button>
+        <button class="star-btn" data-v="3">☆</button>
+        <button class="star-btn" data-v="4">☆</button>
+        <button class="star-btn" data-v="5">☆</button>
+      </div>
+    </div>
+    <div class="rating-thanks" id="ratingThanks" style="display:none;" data-ar="شكراً لتقييمك! 🙏" data-en="Thanks for rating! 🙏">شكراً لتقييمك! 🙏</div>
+  </div>
+
   <footer class="footer" data-ar="صُنع بمعالجة صوت حقيقية عبر Web Audio API — مجاني بالكامل، بدون حساب، وبدون أي حدود استخدام." data-en="Built with real audio processing via the Web Audio API — 100% free, no account, no usage limits.">
     صُنع بمعالجة صوت حقيقية عبر Web Audio API — مجاني بالكامل، بدون حساب، وبدون أي حدود استخدام.
   </footer>
@@ -467,7 +664,67 @@ function applyLanguage(){
 document.getElementById('langToggle').addEventListener('click', ()=>{
   currentLang = currentLang==='ar' ? 'en' : 'ar';
   applyLanguage();
+  updateRatingDisplay(lastRatingStats);
 });
+
+let hasRated = false;
+let lastRatingStats = null;
+
+function updateRatingDisplay(stats){
+  lastRatingStats = stats;
+  const badge = document.getElementById('ratingBadge');
+  const aggRow = document.getElementById('ratingAggRow');
+  const aggText = document.getElementById('ratingAggText');
+  if(!stats || !stats.count){
+    badge.style.display = 'none';
+    aggRow.style.display = 'none';
+    return;
+  }
+  const avg = (stats.sum/stats.count).toFixed(1);
+  const label = t(`تقييم (${stats.count})`, `rating (${stats.count})`);
+  badge.textContent = `⭐ ${avg} ${label}`;
+  badge.style.display = 'inline-flex';
+  aggText.textContent = `⭐ ${avg} / 5 (${stats.count})`;
+  aggRow.style.display = 'block';
+}
+
+async function loadRatingStats(){
+  if(!window.storage) return;
+  try{
+    const res = await window.storage.get('rating-stats', true);
+    if(res && res.value) updateRatingDisplay(JSON.parse(res.value));
+  }catch(e){ /* no ratings stored yet — that's fine */ }
+}
+
+async function submitRating(stars){
+  if(hasRated || !window.storage) return;
+  hasRated = true;
+  let stats = {sum:0, count:0};
+  try{
+    const res = await window.storage.get('rating-stats', true);
+    if(res && res.value) stats = JSON.parse(res.value);
+  }catch(e){ /* first rating ever */ }
+  stats.sum += stars; stats.count += 1;
+  try{ await window.storage.set('rating-stats', JSON.stringify(stats), true); }
+  catch(e){ console.warn('could not save rating', e); }
+  updateRatingDisplay(stats);
+  document.getElementById('ratingAskBlock').style.display = 'none';
+  document.getElementById('ratingThanks').style.display = 'block';
+}
+
+document.querySelectorAll('#starsRow .star-btn').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    const v = parseInt(btn.getAttribute('data-v'), 10);
+    document.querySelectorAll('#starsRow .star-btn').forEach(b=>{
+      const bv = parseInt(b.getAttribute('data-v'), 10);
+      b.textContent = bv<=v ? '★' : '☆';
+      b.classList.toggle('filled', bv<=v);
+    });
+    submitRating(v);
+  });
+});
+
+loadRatingStats();
 
 const dropzone = document.getElementById('dropzone');
 const fileInput = document.getElementById('fileInput');
@@ -1476,6 +1733,9 @@ processBtn.addEventListener('click', async ()=>{
 
     resultPanel.style.display = 'block';
     resultPanel.scrollIntoView({behavior:'smooth', block:'start'});
+    if(!hasRated){
+      document.getElementById('ratingPanel').style.display = 'block';
+    }
 
   }catch(err){
     console.error(err);
