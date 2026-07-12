@@ -1707,6 +1707,77 @@ function slidingWindowMaxPast(data, window){
 
 // Real lookahead limiter, stereo-linked: looks a few ms ahead so it can start
 // reducing gain smoothly *before* a peak hits, instead of hard-clipping it.
+// Final safety net: compression + makeup gain (used for level stability)
+// unavoidably nudges quiet residual noise back up relative to speech — this
+// is the main reason noise can still be *audible* even after real spectral
+// subtraction upstream. This gate specifically targets true speech pauses
+// and pulls them back down, smoothly:
+// - separate open/close thresholds (hysteresis) so it doesn't chatter
+// - a hold time after speech so it never closes mid-sentence, only in real gaps
+// - a slow (~250ms) fade, and a partial floor (not full mute) — so nothing
+//   sounds chopped or robotic, just noticeably quieter between phrases.
+function smoothNoiseGate(buffer){
+  const sr = buffer.sampleRate;
+  const blockMs = 15;
+  const blockSize = Math.max(1, Math.floor(sr*blockMs/1000));
+  const numCh = buffer.numberOfChannels;
+  const channels = [];
+  for(let c=0;c<numCh;c++) channels.push(buffer.getChannelData(c));
+  const n = buffer.length;
+  const numBlocks = Math.max(1, Math.ceil(n/blockSize));
+
+  const blockRms = new Float32Array(numBlocks);
+  for(let b=0;b<numBlocks;b++){
+    const start = b*blockSize, end = Math.min(n, start+blockSize);
+    let sum=0, cnt=0;
+    for(let c=0;c<numCh;c++){
+      const d = channels[c];
+      for(let i=start;i<end;i++){ sum += d[i]*d[i]; cnt++; }
+    }
+    blockRms[b] = Math.sqrt(sum/Math.max(1,cnt));
+  }
+
+  const sorted = Array.from(blockRms).sort((a,b)=>a-b);
+  const noiseFloor = sorted[Math.floor(sorted.length*0.15)] || 1e-6;
+  const openThreshold = noiseFloor*2.2;
+  const closeThreshold = noiseFloor*1.5;
+  const holdBlocks = Math.max(1, Math.round(300/blockMs));
+  const releaseBlocks = Math.max(1, Math.round(250/blockMs));
+  const attackBlocks = Math.max(1, Math.round(30/blockMs));
+  const attenuationFloor = 0.13; // ~ -17.7dB, audible reduction but not dead silence
+
+  let gateOpen = true;
+  let holdCounter = 0;
+  let currentGain = 1;
+  const blockGain = new Float32Array(numBlocks);
+  for(let b=0;b<numBlocks;b++){
+    const level = blockRms[b];
+    if(level > openThreshold){ gateOpen = true; holdCounter = holdBlocks; }
+    else if(level < closeThreshold){
+      if(holdCounter > 0) holdCounter--; else gateOpen = false;
+    } else if(holdCounter > 0){ holdCounter--; }
+    const target = gateOpen ? 1 : attenuationFloor;
+    const smoothing = target < currentGain ? 1/releaseBlocks : 1/attackBlocks;
+    currentGain += (target-currentGain)*smoothing;
+    blockGain[b] = currentGain;
+  }
+
+  const gain = new Float32Array(n);
+  for(let i=0;i<n;i++){
+    const pos = i/blockSize - 0.5;
+    let b0 = Math.floor(pos), b1 = b0+1;
+    const frac = pos-b0;
+    b0 = Math.max(0, Math.min(numBlocks-1, b0));
+    b1 = Math.max(0, Math.min(numBlocks-1, b1));
+    gain[i] = blockGain[b0]*(1-frac) + blockGain[b1]*frac;
+  }
+  for(let c=0;c<numCh;c++){
+    const d = channels[c];
+    for(let i=0;i<n;i++) d[i] *= gain[i];
+  }
+  return buffer;
+}
+
 function limiterBuffer(buffer, ceilingDb = -0.8, lookaheadMs = 6, releaseMs = 60){
   const n = buffer.length;
   const numCh = buffer.numberOfChannels;
@@ -1957,6 +2028,7 @@ processBtn.addEventListener('click', async ()=>{
     setStage(5,'done'); setStage(6,'active');
 
     processed = normalizeBuffer(processed, -16);
+    processed = smoothNoiseGate(processed);
     setStage(6,'done'); setStage(7,'active');
     await wait(150);
 
@@ -2064,6 +2136,7 @@ async function buildHomepageDemo(){
     const tonal = analyzeTonalBalance(demoBuf);
     let afterBuffer = await runEQAndCompression(demoBuf, tonal, 'natural');
     afterBuffer = normalizeBuffer(afterBuffer, -16);
+    afterBuffer = smoothNoiseGate(afterBuffer);
     afterBuffer = limiterBuffer(afterBuffer, -0.8);
 
     const beforeBlobUrl = URL.createObjectURL(bufferToWav(beforeBuffer));
@@ -2078,20 +2151,4 @@ async function buildHomepageDemo(){
     demoStatus.textContent = t('جاهز — اضغط تشغيل لتسمع العيّنة.','Ready — press play to hear the sample.');
 
     demoBeforeBtn.addEventListener('click', ()=>{
-      demoBeforeBtn.classList.add('active'); demoAfterBtn.classList.remove('active');
-      demoPlayer.src = beforeBlobUrl; demoPlayer.play();
-    });
-    demoAfterBtn.addEventListener('click', ()=>{
-      demoAfterBtn.classList.add('active'); demoBeforeBtn.classList.remove('active');
-      demoPlayer.src = afterBlobUrl; demoPlayer.play();
-    });
-  }catch(e){
-    console.warn('homepage demo generation failed', e);
-    const demoStatus = document.getElementById('demoStatus');
-    if(demoStatus) demoStatus.textContent = t('تعذّر تجهيز العيّنة التوضيحية.','Could not prepare the demo sample.');
-  }
-}
-buildHomepageDemo();
-</script>
-</body>
-</html>
+      demoBefo
