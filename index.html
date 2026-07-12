@@ -242,7 +242,17 @@
     text-align:center; font-family:'Cairo'; font-weight:700; color:var(--teal); font-size:15px;
   }
 
-  .seo-section{ margin-bottom:26px; }
+  .demo-section{ margin-bottom:26px; }
+  .demo-section h2{
+    font-family:'Cairo'; font-weight:700; font-size:19px; color:var(--cream);
+    text-align:center; margin-bottom:8px;
+  }
+  .demo-caption{
+    text-align:center; font-size:13px; color:var(--cream-dim); max-width:520px;
+    margin:0 auto 16px; line-height:1.7;
+  }
+  .demo-panel #player, .demo-panel audio{ width:100%; margin-top:10px; }
+
   .seo-section h2{
     font-family:'Cairo'; font-weight:700; font-size:19px; color:var(--cream);
     margin-bottom:14px; text-align:center;
@@ -449,47 +459,16 @@
     </div>
   </section>
 
-  <section class="how-it-works">
-    <h2 data-ar="كيف يعمل صقل؟" data-en="How does Saql work?">كيف يعمل صقل؟</h2>
-    <ol>
-      <li><span class="step-num">1</span><div><h3 data-ar="ارفع ملفك أو سجّل مباشرة" data-en="Upload your file or record directly">ارفع ملفك أو سجّل مباشرة</h3><p data-ar="اختر ملف MP3/MP4 من جهازك، أو سجّل صوتك مباشرة من المتصفح بالمايكروفون." data-en="Choose an MP3/MP4 file from your device, or record directly in the browser using your microphone.">اختر ملف MP3/MP4 من جهازك، أو سجّل صوتك مباشرة من المتصفح بالمايكروفون.</p></div></li>
-      <li><span class="step-num">2</span><div><h3 data-ar="اختر وضع المعالجة" data-en="Choose a processing mode">اختر وضع المعالجة</h3><p data-ar="صوت طبيعي محسّن، أو وضع وثائقي بدفء أعمق — واختر أيضاً أي مقاطع تريد قصّها." data-en="Natural enhanced sound, or a documentary mode with deeper warmth — and trim out any unwanted sections.">صوت طبيعي محسّن، أو وضع وثائقي بدفء أعمق — واختر أيضاً أي مقاطع تريد قصّها.</p></div></li>
-      <li><span class="step-num">3</span><div><h3 data-ar="حمّل النتيجة" data-en="Download the result">حمّل النتيجة</h3><p data-ar="اضغط زر التحسين، قارن قبل/بعد، ثم حمّل الملف بصيغة WAV أو MP3 مباشرة." data-en="Tap enhance, compare before/after, then download the file as WAV or MP3 instantly.">اضغط زر التحسين، قارن قبل/بعد، ثم حمّل الملف بصيغة WAV أو MP3 مباشرة.</p></div></li>
-    </ol>
-  </section>
-
-  <section class="why-us">
-    <h2 data-ar="لماذا تختار صقل؟" data-en="Why choose Saql?">لماذا تختار صقل؟</h2>
-    <ul>
-      <li data-ar="✔ مجاني بالكامل، بدون أي رسوم مخفية" data-en="✔ Completely free, no hidden fees">✔ مجاني بالكامل، بدون أي رسوم مخفية</li>
-      <li data-ar="✔ بدون تسجيل حساب أو بريد إلكتروني" data-en="✔ No account or email sign-up needed">✔ بدون تسجيل حساب أو بريد إلكتروني</li>
-      <li data-ar="✔ بدون أي حدود على عدد الملفات أو مدة الصوت" data-en="✔ No limits on file count or audio length">✔ بدون أي حدود على عدد الملفات أو مدة الصوت</li>
-      <li data-ar="✔ يعمل بالكامل داخل متصفحك — خصوصية تامة" data-en="✔ Runs entirely in your browser — full privacy">✔ يعمل بالكامل داخل متصفحك — خصوصية تامة</li>
-      <li data-ar="✔ يدعم رفع MP3/MP4 وتصدير WAV/MP3" data-en="✔ Supports MP3/MP4 upload and WAV/MP3 export">✔ يدعم رفع MP3/MP4 وتصدير WAV/MP3</li>
-    </ul>
-  </section>
-
-  <section class="faq">
-    <h2 data-ar="أسئلة شائعة" data-en="Frequently Asked Questions">أسئلة شائعة</h2>
-    <div class="faq-item">
-      <h3 data-ar="هل صقل مجاني فعلاً؟" data-en="Is Saql really free?">هل صقل مجاني فعلاً؟</h3>
-      <p data-ar="نعم، الاستخدام مجاني بالكامل وبدون أي حدود على عدد الملفات أو مدة الصوت أو عدد مرات الاستخدام، ولا يوجد أي ميزة مقفلة خلف اشتراك." data-en="Yes, it's completely free to use with no limits on file count, audio length, or number of uses, and no feature is locked behind a subscription.">نعم، الاستخدام مجاني بالكامل وبدون أي حدود على عدد الملفات أو مدة الصوت أو عدد مرات الاستخدام، ولا يوجد أي ميزة مقفلة خلف اشتراك.</p>
-    </div>
-    <div class="faq-item">
-      <h3 data-ar="هل يحفظ الموقع ملفاتي أو يرفعها لأي سيرفر؟" data-en="Does the site save or upload my files to a server?">هل يحفظ الموقع ملفاتي أو يرفعها لأي سيرفر؟</h3>
-      <p data-ar="لا، جميع المعالجة تتم داخل متصفحك فقط باستخدام تقنية Web Audio API، وملفك لا يغادر جهازك إطلاقاً ولا يُخزَّن في أي مكان." data-en="No, all processing happens entirely in your browser using the Web Audio API, and your file never leaves your device or gets stored anywhere.">لا، جميع المعالجة تتم داخل متصفحك فقط باستخدام تقنية Web Audio API، وملفك لا يغادر جهازك إطلاقاً ولا يُخزَّن في أي مكان.</p>
-    </div>
-    <div class="faq-item">
-      <h3 data-ar="ما الصيغ المدعومة للرفع والتصدير؟" data-en="What formats are supported for upload and export?">ما الصيغ المدعومة للرفع والتصدير؟</h3>
-      <p data-ar="يمكنك رفع ملفات MP3 أو MP4 (سيُستخرج الصوت من الفيديو تلقائياً)، وتصدير النتيجة المحسّنة كملف WAV عالي الجودة أو MP3 أصغر حجماً." data-en="You can upload MP3 or MP4 files (audio is auto-extracted from video), and export the enhanced result as a high-quality WAV or a smaller MP3.">يمكنك رفع ملفات MP3 أو MP4 (سيُستخرج الصوت من الفيديو تلقائياً)، وتصدير النتيجة المحسّنة كملف WAV عالي الجودة أو MP3 أصغر حجماً.</p>
-    </div>
-    <div class="faq-item">
-      <h3 data-ar="هل أحتاج لإنشاء حساب لاستخدام صقل؟" data-en="Do I need to create an account to use Saql?">هل أحتاج لإنشاء حساب لاستخدام صقل؟</h3>
-      <p data-ar="لا، لا يوجد أي تسجيل دخول أو حساب مطلوب. افتح الموقع واستخدمه مباشرة." data-en="No, no sign-up or account is required. Just open the site and start using it right away.">لا، لا يوجد أي تسجيل دخول أو حساب مطلوب. افتح الموقع واستخدمه مباشرة.</p>
-    </div>
-    <div class="faq-item">
-      <h3 data-ar="هل يحتاج صقل اتصالاً بالإنترنت؟" data-en="Does Saql need an internet connection?">هل يحتاج صقل اتصالاً بالإنترنت؟</h3>
-      <p data-ar="يحتاج اتصالاً بالإنترنت فقط لتحميل الصفحة أول مرة، أما معالجة الصوت نفسها فتتم بالكامل محلياً داخل متصفحك." data-en="It only needs an internet connection to load the page initially — the actual audio processing happens entirely locally in your browser.">يحتاج اتصالاً بالإنترنت فقط لتحميل الصفحة أول مرة، أما معالجة الصوت نفسها فتتم بالكامل محلياً داخل متصفحك.</p>
+  <section class="demo-section">
+    <h2 data-ar="🎧 استمع للفرق بنفسك" data-en="🎧 Hear the Difference Yourself">🎧 استمع للفرق بنفسك</h2>
+    <p class="demo-caption" data-ar="عيّنة صوتية توضيحية (مولّدة رقمياً) تُظهر كيف يعالج صقل الضجيج والتشويش فعلياً — بنفس الكود الذي يعالج ملفك." data-en="A synthetic demo sample showing what Saql's real processing does — the same code that will process your file.">عيّنة صوتية توضيحية (مولّدة رقمياً) تُظهر كيف يعالج صقل الضجيج والتشويش فعلياً — بنفس الكود الذي يعالج ملفك.</p>
+    <div class="panel demo-panel">
+      <div class="ab-toggle">
+        <button class="ab-btn active" id="demoBeforeBtn" data-ar="▶ قبل (خام)" data-en="▶ Before (raw)">▶ قبل (خام)</button>
+        <button class="ab-btn" id="demoAfterBtn" data-ar="▶ بعد (محسّن)" data-en="▶ After (enhanced)">▶ بعد (محسّن)</button>
+      </div>
+      <audio id="demoPlayer" controls></audio>
+      <div class="rec-tip" id="demoStatus" data-ar="جارٍ تجهيز العيّنة..." data-en="Preparing the sample...">جارٍ تجهيز العيّنة...</div>
     </div>
   </section>
 
@@ -1928,6 +1907,106 @@ processBtn.addEventListener('click', async ()=>{
     processBtn.textContent = t('ابدأ التحسين','Start Enhancing');
   }
 });
+
+// ---- Homepage demo: synthetic "before/after" sample ----
+// Generates a short voice-like signal (formant tones + syllable rhythm) mixed
+// with fan hum, hiss, and one bump/knock — then runs it through the exact
+// same real processing pipeline used on user files, so visitors can hear an
+// honest demonstration before uploading anything themselves.
+function synthesizeDemoRaw(sr, durationSec){
+  const len = Math.floor(sr*durationSec);
+  const buf = new Float32Array(len);
+
+  // syllable-like amplitude envelope
+  const envelope = new Float32Array(len);
+  let idx = 0;
+  let seed = 42;
+  function rand(){ seed = (seed*1664525+1013904223)>>>0; return seed/4294967296; }
+  while(idx < len){
+    const onLen = Math.floor(sr*(0.12+rand()*0.10));
+    const offLen = Math.floor(sr*(0.05+rand()*0.09));
+    for(let i=0;i<onLen && idx<len;i++,idx++){
+      envelope[idx] = Math.sin(Math.PI*(i/onLen));
+    }
+    idx += offLen;
+  }
+  // formant-ish voiced tone
+  const f0base = 115;
+  for(let i=0;i<len;i++){
+    const time = i/sr;
+    const vibrato = 1 + 0.015*Math.sin(2*Math.PI*5*time);
+    const f0 = f0base*vibrato;
+    let s = 0.55*Math.sin(2*Math.PI*f0*time)
+          + 0.22*Math.sin(2*Math.PI*f0*2*time)
+          + 0.10*Math.sin(2*Math.PI*f0*3.4*time);
+    buf[i] = s*envelope[i]*0.55;
+  }
+  // fan hum + broadband hiss
+  for(let i=0;i<len;i++){
+    const time = i/sr;
+    const hum = 0.045*Math.sin(2*Math.PI*90*time) + 0.02*Math.sin(2*Math.PI*180*time);
+    const hiss = (rand()*2-1)*0.035;
+    buf[i] += hum + hiss;
+  }
+  // one loud "knock" transient partway through
+  const knockStart = Math.floor(len*0.55);
+  const knockLen = Math.floor(sr*0.02);
+  for(let i=0;i<knockLen && knockStart+i<len;i++){
+    buf[knockStart+i] += (rand()*2-1)*0.9*(1-i/knockLen);
+  }
+  // safety headroom
+  let peak = 0;
+  for(let i=0;i<len;i++) peak = Math.max(peak, Math.abs(buf[i]));
+  if(peak > 0.95){ const g=0.95/peak; for(let i=0;i<len;i++) buf[i]*=g; }
+  return buf;
+}
+
+async function buildHomepageDemo(){
+  try{
+    const ctx = getCtx();
+    const sr = ctx.sampleRate;
+    const durationSec = 4.5;
+    const rawData = synthesizeDemoRaw(sr, durationSec);
+
+    const rawBuffer = ctx.createBuffer(1, rawData.length, sr);
+    rawBuffer.getChannelData(0).set(rawData);
+    const beforeBuffer = cloneAudioBuffer(rawBuffer, ctx);
+
+    // run through the real pipeline (natural mode, automatic noise reduction)
+    let demoBuf = cloneAudioBuffer(rawBuffer, ctx);
+    detectAndSuppressTransients(demoBuf);
+    spectralDenoise(demoBuf, 1.45, 0.11);
+    const tonal = analyzeTonalBalance(demoBuf);
+    let afterBuffer = await runEQAndCompression(demoBuf, tonal, 'natural');
+    afterBuffer = normalizeBuffer(afterBuffer, -16);
+    afterBuffer = limiterBuffer(afterBuffer, -0.8);
+
+    const beforeBlobUrl = URL.createObjectURL(bufferToWav(beforeBuffer));
+    const afterBlobUrl = URL.createObjectURL(bufferToWav(afterBuffer));
+
+    const demoPlayer = document.getElementById('demoPlayer');
+    const demoBeforeBtn = document.getElementById('demoBeforeBtn');
+    const demoAfterBtn = document.getElementById('demoAfterBtn');
+    const demoStatus = document.getElementById('demoStatus');
+
+    demoPlayer.src = beforeBlobUrl;
+    demoStatus.textContent = t('جاهز — اضغط تشغيل لتسمع العيّنة.','Ready — press play to hear the sample.');
+
+    demoBeforeBtn.addEventListener('click', ()=>{
+      demoBeforeBtn.classList.add('active'); demoAfterBtn.classList.remove('active');
+      demoPlayer.src = beforeBlobUrl; demoPlayer.play();
+    });
+    demoAfterBtn.addEventListener('click', ()=>{
+      demoAfterBtn.classList.add('active'); demoBeforeBtn.classList.remove('active');
+      demoPlayer.src = afterBlobUrl; demoPlayer.play();
+    });
+  }catch(e){
+    console.warn('homepage demo generation failed', e);
+    const demoStatus = document.getElementById('demoStatus');
+    if(demoStatus) demoStatus.textContent = t('تعذّر تجهيز العيّنة التوضيحية.','Could not prepare the demo sample.');
+  }
+}
+buildHomepageDemo();
 </script>
 </body>
 </html>
