@@ -1245,7 +1245,8 @@ function spectralDenoise(buffer, overSubParam, floorRatioParam){
     const halfBins = Math.floor(frameSize/2);
     const hzPerBin = sampleRate/frameSize;
 
-    // Pass A: cheap per-frame RMS energy to find quiet (noise-only) frames
+    // Pass A: cheap per-frame RMS energy (used both for quiet-frame detection
+    // and for the breath-softening heuristic later)
     const energies = new Float32Array(numFrames);
     for(let f=0; f<numFrames; f++){
       const start = f*hop;
@@ -1256,30 +1257,66 @@ function spectralDenoise(buffer, overSubParam, floorRatioParam){
       }
       energies[f] = Math.sqrt(sum/frameSize);
     }
-    const sortedE = Array.from(energies).sort((a,b)=>a-b);
-    const noiseThreshold = sortedE[Math.floor(sortedE.length*0.15)] || 0;
+    const sortedAll = Array.from(energies).sort((a,b)=>a-b);
+    const globalNoiseThreshold = sortedAll[Math.floor(sortedAll.length*0.15)] || 0;
 
-    // Pass B: build average noise magnitude spectrum from quiet frames
-    const noiseMag = new Float32Array(frameSize);
-    let noiseFrameCount = 0;
+    // Pass B: build a LOCAL noise profile per ~3-second segment instead of one
+    // global profile for the whole file. Real-world noise (street ambience,
+    // wind, traffic) isn't constant — this lets the "fingerprint" adapt as the
+    // background changes instead of only matching whatever the quietest
+    // moment in the *entire* recording sounded like.
+    const segFrames = Math.max(24, Math.round((3*sampleRate)/hop)); // ~3s segments
+    const numSegments = Math.max(1, Math.ceil(numFrames/segFrames));
+    const noiseMagBySeg = [];
     const re = new Float32Array(frameSize), im = new Float32Array(frameSize);
-    for(let f=0; f<numFrames; f++){
-      if(energies[f] > noiseThreshold) continue;
-      const start = f*hop;
-      for(let i=0;i<frameSize;i++){ re[i] = (input[start+i]||0)*window[i]; im[i]=0; }
-      fft(re, im);
-      for(let i=0;i<frameSize;i++) noiseMag[i] += Math.sqrt(re[i]*re[i]+im[i]*im[i]);
-      noiseFrameCount++;
-    }
-    if(noiseFrameCount === 0) noiseFrameCount = 1;
-    for(let i=0;i<frameSize;i++) noiseMag[i] /= noiseFrameCount;
 
-    // Pass C: spectral subtraction + breath softening + overlap-add reconstruction
+    for(let s=0; s<numSegments; s++){
+      const segStart = s*segFrames;
+      const segEnd = Math.min(numFrames, segStart+segFrames);
+      const segEnergies = [];
+      for(let f=segStart; f<segEnd; f++) segEnergies.push(energies[f]);
+      const sortedSeg = segEnergies.slice().sort((a,b)=>a-b);
+      // Use the quietest ~20% *within this segment*; if the segment never
+      // has a clear quiet moment (nonstop close-mic noise), widen the net
+      // instead of falling back to a mismatched global profile.
+      let localThreshold = sortedSeg[Math.floor(sortedSeg.length*0.2)];
+      if(localThreshold === undefined || localThreshold === 0) localThreshold = globalNoiseThreshold;
+
+      const noiseMag = new Float32Array(frameSize);
+      let count = 0;
+      for(let f=segStart; f<segEnd; f++){
+        if(energies[f] > localThreshold*1.15) continue;
+        const start = f*hop;
+        for(let i=0;i<frameSize;i++){ re[i] = (input[start+i]||0)*window[i]; im[i]=0; }
+        fft(re, im);
+        for(let i=0;i<frameSize;i++) noiseMag[i] += Math.sqrt(re[i]*re[i]+im[i]*im[i]);
+        count++;
+      }
+      if(count === 0){
+        // truly no quiet frame anywhere in this segment — grab the single
+        // lowest-energy frame we can find so we still have *something* real
+        // to subtract, rather than skipping noise removal for this segment.
+        let minF = segStart, minE = Infinity;
+        for(let f=segStart; f<segEnd; f++){ if(energies[f]<minE){ minE=energies[f]; minF=f; } }
+        const start = minF*hop;
+        for(let i=0;i<frameSize;i++){ re[i] = (input[start+i]||0)*window[i]; im[i]=0; }
+        fft(re, im);
+        for(let i=0;i<frameSize;i++) noiseMag[i] = Math.sqrt(re[i]*re[i]+im[i]*im[i]);
+        count = 1;
+      }
+      for(let i=0;i<frameSize;i++) noiseMag[i] /= count;
+      noiseMagBySeg.push(noiseMag);
+    }
+
+    // Pass C: spectral subtraction (using a smooth cross-fade between this
+    // segment's profile and the neighboring one near boundaries, so the
+    // noise "character" doesn't jump abruptly) + breath softening + overlap-add
     const output = new Float32Array(input.length);
     const winSumSq = new Float32Array(input.length);
     const overSub = overSubParam != null ? overSubParam : 1.45;      // how aggressively to subtract the noise print
     const floorRatio = floorRatioParam != null ? floorRatioParam : 0.11; // spectral floor — higher = fewer robotic/musical-noise artifacts
     const magArr = new Float32Array(frameSize), phaseArr = new Float32Array(frameSize);
+    const blendZone = Math.max(4, Math.round(segFrames*0.12));
 
     for(let f=0; f<numFrames; f++){
       const start = f*hop;
@@ -1296,11 +1333,29 @@ function spectralDenoise(buffer, overSubParam, floorRatioParam){
       const centroidHz = centroidDen > 1e-9 ? centroidNum/centroidDen : 0;
       // Breaths: louder than noise floor but quieter than speech, and energy
       // concentrated in low frequencies (no crisp consonant content).
-      const isBreath = energies[f] > noiseThreshold*1.3 && energies[f] < noiseThreshold*4.5 && centroidHz < 1300;
+      const isBreath = energies[f] > globalNoiseThreshold*1.3 && energies[f] < globalNoiseThreshold*4.5 && centroidHz < 1300;
       const breathAtten = isBreath ? 0.3 : 1;
 
+      // pick which segment(s) this frame belongs to, blending near boundaries
+      const seg = Math.min(numSegments-1, Math.floor(f/segFrames));
+      const posInSeg = f - seg*segFrames;
+      const segLen = Math.min(numFrames, (seg+1)*segFrames) - seg*segFrames;
+      let noiseMagUse = noiseMagBySeg[seg];
+      if(posInSeg < blendZone && seg > 0){
+        const w = 0.5 - (posInSeg/blendZone)*0.5; // fades from 0.5 down to 0
+        const prev = noiseMagBySeg[seg-1];
+        noiseMagUse = new Float32Array(frameSize);
+        for(let i=0;i<frameSize;i++) noiseMagUse[i] = noiseMagBySeg[seg][i]*(1-w) + prev[i]*w;
+      } else if(posInSeg > segLen-blendZone && seg < numSegments-1){
+        const distFromEnd = segLen-posInSeg;
+        const w = 0.5 - (distFromEnd/blendZone)*0.5;
+        const next = noiseMagBySeg[seg+1];
+        noiseMagUse = new Float32Array(frameSize);
+        for(let i=0;i<frameSize;i++) noiseMagUse[i] = noiseMagBySeg[seg][i]*(1-w) + next[i]*w;
+      }
+
       for(let i=0;i<frameSize;i++){
-        let newMag = magArr[i] - overSub*noiseMag[i];
+        let newMag = magArr[i] - overSub*noiseMagUse[i];
         const floor = floorRatio*magArr[i];
         if(newMag < floor) newMag = floor;
         newMag *= breathAtten;
@@ -1818,9 +1873,39 @@ document.querySelectorAll('.intensity-btn').forEach(btn=>{
 // more risk of artifacts); lower % is gentler and more natural-sounding.
 function noiseParamsFromPercent(p){
   const amt = Math.max(0, Math.min(100, p))/100;
-  const overSub = 0.5 + amt*2.2;
-  const floorRatio = 0.20 - amt*0.16;
+  const overSub = 0.5 + amt*3.0;
+  const floorRatio = 0.20 - amt*0.18;
   return { overSub, floorRatio };
+}
+
+// Estimates how noisy the recording is (rough SNR) by comparing the quietest
+// portions of the track to its typical "loud" (speech) portions.
+function estimateNoiseSeverity(buffer){
+  const data = buffer.getChannelData(0);
+  const sr = buffer.sampleRate;
+  const blockSize = Math.max(1, Math.floor(sr*0.05));
+  const blocks = [];
+  for(let i=0;i<data.length;i+=blockSize){
+    let sum=0, cnt=0;
+    const end = Math.min(i+blockSize, data.length);
+    for(let j=i;j<end;j++){ sum += data[j]*data[j]; cnt++; }
+    blocks.push(Math.sqrt(sum/Math.max(1,cnt)));
+  }
+  blocks.sort((a,b)=>a-b);
+  const noiseLevel = blocks[Math.floor(blocks.length*0.15)] || 1e-6;
+  const speechLevel = blocks[Math.floor(blocks.length*0.75)] || (noiseLevel*2);
+  return speechLevel/Math.max(noiseLevel, 1e-6); // higher = cleaner recording
+}
+
+// Automatic mode isn't one fixed gentle setting anymore — it measures how
+// noisy the recording actually is and scales intensity accordingly, so a
+// quiet room stays natural-sounding while a noisy street or a fan right next
+// to the mic gets real, aggressive cleanup.
+function autoNoiseParamsFromSeverity(snr){
+  if(snr > 9)  return { overSub: 0.9, floorRatio: 0.16 };
+  if(snr > 5)  return { overSub: 1.5, floorRatio: 0.11 };
+  if(snr > 2.7) return { overSub: 2.3, floorRatio: 0.07 };
+  return { overSub: 3.2, floorRatio: 0.035 }; // very noisy environment
 }
 
 let beforeUrl = null, afterUrl = null;
@@ -1860,7 +1945,7 @@ processBtn.addEventListener('click', async ()=>{
 
     const noiseParams = noiseReductionMode==='manual'
       ? noiseParamsFromPercent(noiseReductionIntensity)
-      : { overSub: 1.45, floorRatio: 0.11 }; // tuned automatic default
+      : autoNoiseParamsFromSeverity(estimateNoiseSeverity(trimmed)); // smart auto: scales with how noisy the recording actually is
     spectralDenoise(trimmed, noiseParams.overSub, noiseParams.floorRatio);
     await wait(150);
     setStage(3,'done'); setStage(4,'active');
